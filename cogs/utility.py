@@ -313,13 +313,7 @@ class Utility(commands.Cog):
             view.add_item(utils.RolesButton(member=member, row=len(view.children) // 3))
 
 
-        last_seen: datetime.datetime = await self.bot.pool.fetchval(
-            f"SELECT datetime FROM last_seen WHERE user_id = {user.id}"
-        )
-        if last_seen:
-            embed.description += (
-                f"\nlast seen {discord.utils.format_dt(last_seen, 'R')}"
-            )
+
         status_since = await self.bot.pool.fetchrow(
             "SELECT activity, datetime FROM activities WHERE user_id = $1 ORDER BY datetime DESC",
             user.id,
