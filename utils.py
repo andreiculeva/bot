@@ -956,21 +956,6 @@ class SimpleBirthdayPageSource(menus.ListPageSource):
         return menu.embed
 
 
-class SimpleBirthdayPages(RoboPages):
-    """A simple pagination session reminiscent of the old Pages interface.
-    Basically an embed with some normal formatting.
-    """
-
-    def __init__(
-        self,
-        entries,
-        *,
-        ctx: commands.Context,
-        per_page: int = 6,
-        title="Coming up birthdays",
-    ):
-        super().__init__(SimpleBirthdayPageSource(entries, per_page=per_page), ctx=ctx)
-        self.embed = discord.Embed(colour=discord.Colour.orange(), title=title)
 
 
 class EmojiView(discord.ui.View):
