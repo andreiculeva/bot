@@ -173,7 +173,7 @@ class RoboPages(discord.ui.View):
         self.clear_items()
         self.fill_items()
         self.timeout = 600
-        self.interaction: discord.Interaction | None = None
+        self.interaction: discord.Interaction= None
         self.embed = discord.Embed(color=discord.Color.orange())
 
     def fill_items(self) -> None:
@@ -2856,7 +2856,7 @@ class MusicView(discord.ui.View):
         super().__init__(timeout=None)
         self.bot = bot
 
-    def get_player(self, guild: discord.Guild) -> lavalink.DefaultPlayer | None:
+    def get_player(self, guild: discord.Guild) -> lavalink.DefaultPlayer:
         return self.bot.lavalink.player_manager.create(guild.id)
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
@@ -3049,7 +3049,7 @@ class LavalinkVoiceClient(discord.VoiceClient):
         Handles the disconnect.
         Cleans up running player and leaves the voice client.
         """
-        player: lavalink.DefaultPlayer | None = self.lavalink.player_manager.get(
+        player: lavalink.DefaultPlayer = self.lavalink.player_manager.get(
             self.channel.guild.id
         )
         if player is not None:
@@ -3138,7 +3138,7 @@ class RadioTransformer(discord.app_commands.Transformer):
         return to_return[:25]
 
 
-async def get_user_reference(message: discord.Message) -> None | discord.User:
+async def get_user_reference(message: discord.Message) -> discord.User:
     if message is None:
         return None
     if message.reference is None:
@@ -3155,7 +3155,7 @@ async def get_user_reference(message: discord.Message) -> None | discord.User:
     return message._state.get_user(reference.author.id)
 
 
-async def get_member_reference(message: discord.Message) -> None | discord.Member:
+async def get_member_reference(message: discord.Message) -> discord.Member:
     if message is None:
         return None
     if message.reference is None:
@@ -3172,7 +3172,7 @@ async def get_member_reference(message: discord.Message) -> None | discord.Membe
 
 async def get_reference(
     message: discord.Message,
-) -> None | discord.User | discord.Member:
+) -> discord.User:
     if message is None:
         return None
     if message.reference is None:

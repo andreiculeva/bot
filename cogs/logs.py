@@ -22,7 +22,7 @@ class Logs(commands.Cog):
         guild: discord.Guild,
         action_type: discord.AuditLogAction,
         target_id: int = None,
-    ) -> discord.AuditLogEntry | None:
+    ) -> discord.AuditLogEntry:
         if target_id:
             entries = [
                 entry
@@ -49,7 +49,7 @@ class Logs(commands.Cog):
     def allowed_time(self) -> datetime.datetime:
         return discord.utils.utcnow() - datetime.timedelta(seconds=10)
 
-    def get_channel(self, guild: discord.Guild) -> None | discord.TextChannel:
+    def get_channel(self, guild: discord.Guild) -> discord.TextChannel:
         channel_id = self._channels.get(guild.id)
         if channel_id is None:
             return

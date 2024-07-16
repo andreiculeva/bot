@@ -312,14 +312,14 @@ class Utility(commands.Cog):
             view.add_item(utils.PermsButton(member=member, row=len(view.children) // 3))
             view.add_item(utils.RolesButton(member=member, row=len(view.children) // 3))
 
-        birthdate: None | datetime.date = await self.bot.pool.fetchval(
+        birthdate: datetime.date = await self.bot.pool.fetchval(
             f"SELECT birthdate FROM birthdays WHERE user_id = {user.id}"
         )
         if birthdate:
             bd = birthdate.strftime("%d %B %Y")
             embed.description += f"\n\U0001f370 birthday: {bd}"
 
-        last_seen: datetime.datetime | None = await self.bot.pool.fetchval(
+        last_seen: datetime.datetime = await self.bot.pool.fetchval(
             f"SELECT datetime FROM last_seen WHERE user_id = {user.id}"
         )
         if last_seen:

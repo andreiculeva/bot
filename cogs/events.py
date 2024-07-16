@@ -7,7 +7,7 @@ import bot
 import utils
 
 
-def is_valid_url(url: str) -> str | None:
+def is_valid_url(url: str):
     valid_re = [
         re.compile(
             r"https?://www\.tiktok\.com/(?:embed|@(?P<user_id>[\w\.-]+)/video)/(?P<id>\d+)"
