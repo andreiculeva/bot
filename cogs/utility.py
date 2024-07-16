@@ -350,7 +350,7 @@ class Utility(commands.Cog):
         else:
             view.message = await ctx.send(embed=embed, view=view)
 
-    @commands.command(aliases=["av", "avatar", "avs"])
+    @commands.command(aliases=["av"])
     async def avatar(self, ctx: commands.Context, user: utils.UserConverter = None):
         """Returns the `user`'s avatar.
         `user` can be the message reference's author.
@@ -367,7 +367,7 @@ class Utility(commands.Cog):
             embed=em, view=discord.ui.View().add_item(utils.url_button(user))
         )
 
-    @commands.command(aliases=["sav", "savatar", "serveravatar", "serveravatar"])
+    @commands.command(aliases=["sav", "serveravatar"])
     async def savatar(
         self, ctx: commands.Context, member: utils.MemberConverter = None
     ):
