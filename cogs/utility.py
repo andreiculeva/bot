@@ -314,12 +314,6 @@ class Utility(commands.Cog):
 
 
 
-        status_since = await self.bot.pool.fetchrow(
-            "SELECT activity, datetime FROM activities WHERE user_id = $1 ORDER BY datetime DESC",
-            user.id,
-        )
-        if status_since:
-            embed.description += f"\n{activity_em.get(status_since['activity'])} {status_since['activity']} since {discord.utils.format_dt(status_since['datetime'], 'R')}"
 
         if banner:
             val += f"\n[banner]({banner})"
@@ -336,10 +330,7 @@ class Utility(commands.Cog):
 
         embed.add_field(name="urls", value=val)
 
-        if await self.bot.pool.fetchrow(
-            f"SELECT * FROM activities WHERE user_id = {user.id}"
-        ):
-            view.add_item(utils.ActivityButton(user=user, row=len(view.children) // 3))
+
         if await self.bot.pool.fetchrow(
             f"SELECT * FROM avatars WHERE user_id = {user.id} AND server_id = 0"
         ):
