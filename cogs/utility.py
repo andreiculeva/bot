@@ -330,13 +330,6 @@ class Utility(commands.Cog):
 
         embed.add_field(name="urls", value=val)
 
-
-        if await self.bot.pool.fetchrow(
-            f"SELECT * FROM avatars WHERE user_id = {user.id} AND server_id = 0"
-        ):
-            view.add_item(
-                utils.AvatarHistoryButton(user=user, row=len(view.children) // 3)
-            )
         if await self.bot.pool.fetchrow(
             "SELECT * FROM nicknames WHERE user_id = $1 AND server_id = $2 ORDER BY datetime DESC",
             user.id,
@@ -357,7 +350,7 @@ class Utility(commands.Cog):
         else:
             view.message = await ctx.send(embed=embed, view=view)
 
-    @commands.command(aliases=["av", "avatars", "avs"])
+    @commands.command(aliases=["av", "avatar", "avs"])
     async def avatar(self, ctx: commands.Context, user: utils.UserConverter = None):
         """Returns the `user`'s avatar.
         `user` can be the message reference's author.
@@ -374,7 +367,7 @@ class Utility(commands.Cog):
             embed=em, view=discord.ui.View().add_item(utils.url_button(user))
         )
 
-    @commands.command(aliases=["sav", "savatars", "serveravatar", "serveravatars"])
+    @commands.command(aliases=["sav", "savatar", "serveravatar", "serveravatar"])
     async def savatar(
         self, ctx: commands.Context, member: utils.MemberConverter = None
     ):
