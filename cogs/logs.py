@@ -48,7 +48,7 @@ class Logs(commands.Cog):
 
 
     async def cog_load(self) -> None:
-        self.load_channels()
+        await self.load_channels()
         
     @property
     def allowed_time(self) -> datetime.datetime:
