@@ -40,11 +40,16 @@ class Logs(commands.Cog):
             return entries[0]
         return None
 
-    async def cog_load(self) -> None:
+    async def load_channels(self):
         channels = await self.bot.pool.fetch("SELECT * FROM log_channels")
         for row in channels:
             self._channels[row["server_id"]] = row["channel_id"]
 
+
+
+    async def cog_load(self) -> None:
+        self.load_channels()
+        
     @property
     def allowed_time(self) -> datetime.datetime:
         return discord.utils.utcnow() - datetime.timedelta(seconds=10)
