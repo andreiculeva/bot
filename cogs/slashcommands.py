@@ -1024,6 +1024,36 @@ class Slashcommands(commands.Cog):
             em.set_image(url=user.default_avatar)
         await interaction.response.send_message(embed=em)
 
+
+
+    @app_commands.command(
+        name="setlogchannel",
+        description="Sets the channel for server logs, no more configuration required",
+    )
+    @app_commands.default_permissions(manage_guild=True)
+    @app_commands.describe(
+        channel="The channel to log to, if not given then the bot stops logging for this srever"
+    )
+    async def set_log_channel(
+        self, interaction: discord.Interaction, channel: discord.TextChannel = None
+    ):
+        if not interaction.user.guild_permissions.manage_guild:
+            return await interaction.response.send_message(
+                "You're missing permissions", ephemeral=True
+            )
+        await self.bot.pool.execute(
+            f"DELETE FROM log_channels WHERE server_id = {interaction.guild.id}"
+        )
+        if channel is not None:
+            await self.bot.pool.execute(
+                "INSERT INTO log_channels (server_id, channel_id) VALUES ($1, $2) ON CONFLICT (server_id) DO UPDATE SET channel_id=excluded.channel_id",
+                interaction.guild.id,
+                channel.id,
+            )
+        await interaction.response.send_message("done \U0001f44d")
+        await self.bot.cogs["logs"].load_channels()
+
+
     @app_commands.command(
         name="setinvitelog",
         description="Sets the channel for the invite logger, no more configuration required",
