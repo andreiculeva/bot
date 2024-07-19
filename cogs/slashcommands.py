@@ -1051,7 +1051,7 @@ class Slashcommands(commands.Cog):
                 channel.id,
             )
         await interaction.response.send_message("done \U0001f44d")
-        await self.bot.cogs["logs"].load_channels()
+        await self.bot.cogs["Logs"].load_channels()
 
 
     @app_commands.command(
