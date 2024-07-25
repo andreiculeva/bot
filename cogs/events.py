@@ -4,7 +4,16 @@ from discord.ext import commands, tasks
 import asyncio
 import typing
 import bot
+import traceback
 import utils
+from discord.ext.commands.errors import (
+    CommandNotFound,
+    MemberNotFound,
+    MissingPermissions,
+    MissingRequiredArgument,
+    RoleNotFound,
+    UserNotFound,
+)
 
 
 def is_valid_url(url: str):
@@ -36,6 +45,80 @@ class events(commands.Cog):
     def cog_unload(self):
         self.update_invites.cancel()
 
+    @staticmethod
+    @commands.Cog.listener()
+    async def on_command_error(ctx: commands.Context[bot.AndreiBot], error):
+        if hasattr(ctx.command, "on_error"):
+            return
+        if ctx.cog:
+            if ctx.cog._get_overridden_method(ctx.cog.cog_command_error) is not None:
+                return
+        em = discord.Embed(color=discord.Color.red())
+        error = getattr(error, "original", error)
+        if isinstance(error, CommandNotFound):
+            if (
+                ctx.author.id in (bot.ANDREI2_ID, bot.ANDREI_ID)
+                and ctx.guild.id == 831556458398089217
+            ):
+                em.description = f"I couldn't find that command"
+                await ctx.send(embed=em, ephemeral=True)
+            return
+
+        if isinstance(error, UserNotFound):
+            em.description = f"I couldn't find the user `{error.argument}`"
+        elif isinstance(error, MemberNotFound):
+            em.description = f"I couldn't find `{error.argument}` in the server"
+        elif isinstance(error, MissingRequiredArgument):
+            em.description = (
+                f"`{error.param.name}` is a required argument that is missing"
+            )
+        elif isinstance(error, discord.Forbidden):
+            em.description = f"I am missing permissions"
+        elif isinstance(error, MissingPermissions):
+            if ctx.author.id in ctx.bot.owner_ids:
+                await ctx.reinvoke(restart=True)  # bypass owners
+                return
+            x = ", ".join(
+                [f"`{p.replace('_', ' ')}`" for p in error.missing_permissions]
+            )
+            em.description = f"You are missing the {x} perms"
+        elif isinstance(error, RoleNotFound):
+            em.description = (
+                f"I couldn't find the role `{error.argument}` in this server"
+            )
+        elif isinstance(error, discord.HTTPException):
+            em.add_field(
+                name="HTTP exception", value=f"error code {error.code}\n{error.text}"
+            )
+        elif isinstance(error, commands.BadLiteralArgument):
+            em.description = (
+                f"{error.param} is not a valid argument ({' ,'.join(error.literals)})"
+            )
+        elif isinstance(error, commands.EmojiNotFound):
+            em.add_field(
+                name="Couldn't find that emoji", value="Maybe I am not in that server"
+            )
+        elif isinstance(error, commands.PartialEmojiConversionFailure):
+            em.description = "I couldn't find that emoji"
+        elif isinstance(error, ValueError):
+            em.description = f"{error.args[0]}"
+        elif isinstance(error, commands.BadArgument):
+            em.description = str(error)
+        elif isinstance(error, commands.CommandInvokeError):
+            em.description = str(error)
+        else:
+            if ctx.author.id in (bot.ANDREI2_ID, bot.ANDREI_ID):
+                if isinstance(error, str):  # ??
+                    em.description = str(error)
+                else:
+                    lines = traceback.format_exception(
+                        type(error), error, error.__traceback__
+                    )
+                    traceback_text = "".join(lines)
+                    em.description = f"```python\n{traceback_text}```"
+            else:
+                em.description = str(error)
+        await ctx.send(embed=em, ephemeral=True)
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):
@@ -58,7 +141,6 @@ class events(commands.Cog):
         em.set_image(url=guild.icon)
         em.set_author(name=f"{guild.name}", icon_url=guild.icon)
         await self.bot.log_channel.send(embed=em)
-
 
     @commands.Cog.listener()
     async def on_message_delete(self, message: discord.Message):
@@ -103,8 +185,6 @@ class events(commands.Cog):
 
             await asyncio.sleep(600)
             self.bot.deleted_files.pop(message.id, None)
-
-
 
     @commands.Cog.listener(name="on_message")
     async def counter(self, message: discord.Message):
@@ -190,9 +270,9 @@ class events(commands.Cog):
                     )
                     temp_embed.set_author(
                         name=member,
-                        icon_url=member.avatar
-                        if (member.avatar)
-                        else member.display_avatar,
+                        icon_url=(
+                            member.avatar if (member.avatar) else member.display_avatar
+                        ),
                         url=member.avatar if (member.avatar) else member.display_avatar,
                     )
                     temp_embed.set_footer(text=f"user id : {member.id}")
@@ -524,7 +604,6 @@ class events(commands.Cog):
                     return old_invite  # if an old invite is not in the new list anymore
         return None
 
-
     @commands.Cog.listener(name="on_member_join")
     async def joinertracker(self, member: discord.Member):
         if not member.guild.id in self.channels.keys():
@@ -561,7 +640,6 @@ class events(commands.Cog):
         await self.bot.get_channel(self.channels[member.guild.id]).send(embed=em)
         self.invites[member.guild.id] = await member.guild.invites()
 
-
     @commands.Cog.listener(name="on_member_remove")
     async def memberremovercheckidk(self, member: discord.Member):
         if not member.guild.id in self.channels.keys():
@@ -586,8 +664,6 @@ class events(commands.Cog):
         if not invite.guild.id in self.channels.keys():
             return
         self.invites[invite.guild.id] = await invite.guild.invites()
-
-
 
     @commands.Cog.listener(name="on_user_update")
     async def username_logger(self, before: discord.User, after: discord.User):
@@ -618,12 +694,7 @@ class events(commands.Cog):
             after.nick,
         )
 
-
-
-
-
-    
-    #TODO make this work in all servers
+    # TODO make this work in all servers
     @commands.Cog.listener(name="on_member_update")
     async def _member_stalker(self, before: discord.Member, after: discord.Member):
         return
@@ -662,8 +733,7 @@ class events(commands.Cog):
             return
         await channel.send(embed=em)
 
-
-    #TODO remake this for all servers maybe
+    # TODO remake this for all servers maybe
     @commands.Cog.listener(name="on_user_update")
     async def _profile_stalker(self, before: discord.User, after: discord.User):
         return
