@@ -15,6 +15,7 @@ from enum import Enum
 url_rx = re.compile(
     r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
 )
+inv = (discord.Status.invisible, discord.Status.offline)
 
 
 DatesStyles = [
@@ -43,8 +44,8 @@ class months(enum.Enum):
     December = 12
 
 
-#@app_commands.allowed_installs(guilds=True, users=True)
-#@app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
+# @app_commands.allowed_installs(guilds=True, users=True)
+# @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
 
 
 class ProfileView(discord.ui.View):
@@ -732,7 +733,6 @@ class Slashcommands(commands.Cog):
                         pass
                 await interaction.followup.send(f"Added {done} emojis")
 
-
         @app_commands.allowed_installs(guilds=True, users=True)
         @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
         @tree.context_menu(name="view banner")
@@ -957,7 +957,6 @@ class Slashcommands(commands.Cog):
         s = f"{discord.utils.format_dt(dtime, style.value)}"
         await interaction.response.send_message(s)
 
-
     @app_commands.allowed_installs(guilds=True, users=True)
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
     @app_commands.command(description="View member banners")
@@ -980,13 +979,99 @@ class Slashcommands(commands.Cog):
         embed.set_image(url=banner.with_size(4096))
         await interaction.response.send_message(embed=embed)
 
+    @app_commands.allowed_installs(guilds=True, users=True)
+    @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
+    @app_commands.command(description="Show useful info about a discord user")
+    @app_commands.describe(
+        user="The target user, fill with ID if outside the server",
+    )
+    async def profile(
+        self,
+        ctx: commands.Context,
+        user: typing.Annotated[discord.User, utils.CustomUserTransformer] = None,
+    ):
+        "Shows useful info about a discord user"
 
+        if user is None:
+            user = await utils.get_reference(ctx.message)
+        if user is None:
+            user = ctx.author
+
+        view = ProfileView(timeout=600)
+        view.message: discord.Message = None  # type: ignore
+        member = ctx.guild.get_member(user.id)
+        fetched_user = await self.bot.fetch_user(user.id)
+        banner = fetched_user.banner
+
+        embed = discord.Embed(
+            color=fetched_user.accent_color or discord.Color.orange(),
+            description="",
+        )
+        if user != self.bot.user and user.mutual_guilds:
+            embed.description += f"We share {len(user.mutual_guilds)} servers"
+        embed.description += (
+            f"\naccount created {discord.utils.format_dt(user.created_at, style='R')}"
+        )
+        embed.set_author(name=user, icon_url=user.display_avatar)
+        embed.set_footer(text=f"ID: {user.id}")
+        val = f"[avatar]({fetched_user.display_avatar})"
+
+        if member:
+            if member.guild_avatar:
+                val += f"\n[server avatar]({member.guild_avatar})"
+            embed.description += (
+                f"\njoined {discord.utils.format_dt(member.joined_at, style='R')}"
+            )
+
+            if member.mobile_status not in (inv):
+                embed.description += f"\n\U0001f4f1 on mobile"
+            if member.desktop_status not in (inv):
+                embed.description += f"\n\U0001f5a5 on desktop client"
+            if member.web_status not in (inv):
+                embed.description += "\n\U0001f4bb on browser client"
+            if member.premium_since:
+                embed.description += f"\n{utils.profile_emojis.get('nitro')} boosting this server since {discord.utils.format_dt(member.premium_since, style='R')}"
+            view.add_item(utils.PermsButton(member=member, row=len(view.children) // 3))
+            view.add_item(utils.RolesButton(member=member, row=len(view.children) // 3))
+
+        if banner:
+            val += f"\n[banner]({banner})"
+
+        if user.public_flags:
+            val1 = ""
+            count = 0
+            for flag in user.public_flags.all():
+                a = "\n"
+                val1 += f"{' ' if count%3 else a}{utils.profile_emojis.get(flag.name, flag.name.replace('_', ' '))}"
+                count += 1
+            if val1:
+                embed.add_field(name=f"badges", value=val1)
+
+        embed.add_field(name="urls", value=val)
+
+        if await self.bot.pool.fetchrow(
+            "SELECT * FROM nicknames WHERE user_id = $1 AND server_id = $2 ORDER BY datetime DESC",
+            user.id,
+            ctx.guild.id,
+        ):
+            view.add_item(
+                utils.NicknamesButton(member=user, row=len(view.children) // 3)
+            )
+        if await self.bot.pool.fetchrow(
+            f"SELECT * FROM usernames WHERE user_id = {user.id}"
+        ):
+            view.add_item(utils.UsernamesButton(user=user, row=len(view.children) // 3))
+        view.add_item(utils.url_button(user, row=len(view.children) // 3))
+
+        if ctx.interaction:
+            await ctx.send(embed=embed, view=view)
+            view.message = await ctx.interaction.original_response()
+        else:
+            view.message = await ctx.send(embed=embed, view=view)
 
     @app_commands.allowed_installs(guilds=True, users=True)
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
-    @app_commands.command(
-        description="View any discord user's avatar"
-    )
+    @app_commands.command(description="View any discord user's avatar")
     @app_commands.describe(
         user="The target user, fill with ID if outside the server",
         type="The avatar type",
@@ -1024,8 +1109,6 @@ class Slashcommands(commands.Cog):
             em.set_image(url=user.default_avatar)
         await interaction.response.send_message(embed=em)
 
-
-
     @app_commands.command(
         name="setlogchannel",
         description="Sets the channel for server logs, no more configuration required",
@@ -1052,7 +1135,6 @@ class Slashcommands(commands.Cog):
             )
         await interaction.response.send_message("done \U0001f44d")
         await self.bot.cogs["Logs"].load_channels()
-
 
     @app_commands.command(
         name="setinvitelog",
