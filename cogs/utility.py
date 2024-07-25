@@ -261,6 +261,8 @@ class Utility(commands.Cog):
         )
         v.message = await ctx.send(embed=em, view=v)
 
+    @app_commands.allowed_installs(guilds=True, users=True)
+    @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
     @commands.hybrid_command(aliases=["memberinfo", "userinfo", "whois"])
     @app_commands.describe(user="The target user")
     async def profile(
