@@ -719,9 +719,7 @@ class Slashcommands(commands.Cog):
                 )
                 await view.wait()
                 if not view.value:  # doesn't want to add them
-                    return await interaction.edit_original_response(
-                        content="\U0001f44d"
-                    )
+                    return
                 done = 0
                 for emoji in emojis:
                     try:
