@@ -705,7 +705,6 @@ class events(commands.Cog):
         )
         if message.channel.id not in (832882989972979723,):
             return
-        await message.channel.send(f"{message.embeds} {message.attachments}")
         if not message.author.guild_permissions.administrator:
             if (not message.embeds) and (not message.attachments):
                 try: # delete if user sent message with no content
