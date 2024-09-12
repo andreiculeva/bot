@@ -703,6 +703,7 @@ class events(commands.Cog):
         )
         if message.channel.id not in (832882989972979723,):
             return
+        await message.channel.send(f"{message.embeds} {message.attachments}")
         if (not message.embeds) or (not message.attachments):
             if not message.author.guild_permissions.administrator:
                 try:
