@@ -716,9 +716,9 @@ class events(commands.Cog):
         if ((not message.embeds) and (not message.attachments)) and message.author.guild_permissions.administrator:
             return # ignore if admin sent message with no content
         await message.add_reaction("\U0001f525")  # fire emoji
+        await message.add_reaction("\U0001f602") # laugh emoji
         emoji_ids = (
             1283898433345818645,  # bigbrain
-            1283898634890510397,  # trollface
             854231053124370482,  # meh
         )
         for emoji_id in emoji_ids:
