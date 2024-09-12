@@ -706,14 +706,16 @@ class events(commands.Cog):
         if message.channel.id not in (832882989972979723,):
             return
         await message.channel.send(f"{message.embeds} {message.attachments}")
-        if (not message.embeds) or (not message.attachments):
-            if not message.author.guild_permissions.administrator:
-                try:
+        if not message.author.guild_permissions.administrator:
+            if (not message.embeds) or (not message.attachments):
+                try: # delete if user sent message with no content
                     await message.delete()
                 except (discord.Forbidden, discord.NotFound, discord.HTTPException):
                     log_channel = self.bot.get_channel(865124093999972362)
                     await log_channel.send(f"Failed to delete {message.jump_url}")
                 return
+        if ((not message.embeds) or (not message.attachments)) and message.author.guild_permissions.administrator:
+            return # ignore if admin sent message with no content
         await message.add_reaction("\U0001f525")  # fire emoji
         emoji_ids = (
             1283898433345818645,  # bigbrain
