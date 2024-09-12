@@ -694,33 +694,7 @@ class events(commands.Cog):
             after.nick,
         )
 
-    @commands.Cog.listener(name="on_message")
-    async def filter_clips(self, message: discord.Message):
-        channel_whitelist = (
-            846140294688538634,  # member clips
-            1278716164754903151,  # comeback
-            846138253157335051,  # clips
-        )
-        if message.channel.id not in channel_whitelist:
-            return
-        if (not message.embeds) or (not message.attachments):
-            if not message.author.guild_permissions.administrator:
-                try:
-                    await message.delete()
-                except (discord.Forbidden, discord.NotFound, discord.HTTPException):
-                    log_channel = self.bot.get_channel(865124093999972362)
-                    await log_channel.send(f"Failed to delete {message.jump_url}")
-                return
-        await message.add_reaction("\U0001f525")  # fire emoji
-        emoji_ids = (
-            1283898433345818645,  # bigbrain
-            1283898634890510397,  # trollface
-            854231053124370482,  # meh
-        )
-        for emoji_id in emoji_ids:
-            em = self.bot.get_emoji(emoji_id)
-            if em is not None:
-                await message.add_reaction(em)
+    
 
     # TODO make this work in all servers
     @commands.Cog.listener(name="on_member_update")
