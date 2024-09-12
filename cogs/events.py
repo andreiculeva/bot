@@ -701,7 +701,7 @@ class events(commands.Cog):
             1278716164754903151,  # comeback
             846138253157335051,  # clips
         )
-        if message.channel.id not in (832882989972979723):
+        if message.channel.id not in (832882989972979723,):
             return
         if (not message.embeds) or (not message.attachments):
             if not message.author.guild_permissions.administrator:
