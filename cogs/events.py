@@ -696,7 +696,7 @@ class events(commands.Cog):
 
     @commands.Cog.listener(name="on_message")
     async def filter_clips(self, message: discord.Message):
-        if message.bot:
+        if message.author.bot:
             return
         channel_whitelist = (
             846140294688538634,  # member clips
