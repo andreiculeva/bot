@@ -732,6 +732,7 @@ class events(commands.Cog):
             return
         if message.author.guild_permissions.administrator:
             return  # ignore admins
+        await asyncio.sleep(2)
         if not (message.attachments or message.embeds):
             try:  # delete if user sent message with no content
                 await message.delete()
