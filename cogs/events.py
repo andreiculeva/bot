@@ -695,8 +695,8 @@ class events(commands.Cog):
         )
 
     @commands.Cog.listener(name="on_message")
-    async def filter_clips(self, message: discord.Message):
-        return
+    async def add_reactions(self, message: discord.Message):
+        """This only adds the reactions"""
         if message.author.bot:
             return
         channel_whitelist = (
@@ -704,20 +704,12 @@ class events(commands.Cog):
             1278716164754903151,  # comeback
             846138253157335051,  # clips
         )
-        if message.channel.id not in channel_whitelist:
+        if message.channel.id != 832882989972979723:
             return
-        if not message.author.guild_permissions.administrator:
-            if (not message.embeds) and (not message.attachments):
-                try: # delete if user sent message with no content
-                    await message.delete()
-                except (discord.Forbidden, discord.NotFound, discord.HTTPException):
-                    log_channel = self.bot.get_channel(865124093999972362)
-                    await log_channel.send(f"Failed to delete {message.jump_url}")
-                return
-        if ((not message.embeds) and (not message.attachments)) and message.author.guild_permissions.administrator:
-            return # ignore if admin sent message with no content
+        if not (message.attachments or message.embeds):
+            return
         await message.add_reaction("\U0001f525")  # fire emoji
-        await message.add_reaction("\U0001f602") # laugh emoji
+        await message.add_reaction("\U0001f602")  # laugh emoji
         emoji_ids = (
             1283898433345818645,  # bigbrain
             854231053124370482,  # meh
@@ -726,6 +718,26 @@ class events(commands.Cog):
             em = self.bot.get_emoji(emoji_id)
             if em is not None:
                 await message.add_reaction(em)
+
+    @commands.Cog.listener(name="on_message")
+    async def filter_messages(self, message: discord.Message):
+        if message.author.bot:
+            return
+        channel_whitelist = (
+            846140294688538634,  # member clips
+            1278716164754903151,  # comeback
+            846138253157335051,  # clips
+        )
+        if message.channel.id != 832882989972979723:
+            return
+        if message.author.guild_permissions.administrator:
+            return  # ignore admins
+        if not (message.attachments or message.embeds):
+            try:  # delete if user sent message with no content
+                await message.delete()
+            except (discord.Forbidden, discord.NotFound, discord.HTTPException):
+                log_channel = self.bot.get_channel(865124093999972362)
+                await log_channel.send(f"Failed to delete {message.jump_url}")
 
     # TODO make this work in all servers
     @commands.Cog.listener(name="on_member_update")
