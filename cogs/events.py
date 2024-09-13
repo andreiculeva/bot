@@ -704,7 +704,7 @@ class events(commands.Cog):
             1278716164754903151,  # comeback
             846138253157335051,  # clips
         )
-        if message.channel.id != 832882989972979723:
+        if message.channel.id not in channel_whitelist:
             return
         await asyncio.sleep(2)
         if not (message.attachments or message.embeds):
@@ -729,7 +729,7 @@ class events(commands.Cog):
             1278716164754903151,  # comeback
             846138253157335051,  # clips
         )
-        if message.channel.id != 832882989972979723:
+        if message.channel.id not in channel_whitelist:
             return
         if message.author.guild_permissions.administrator:
             return  # ignore admins
