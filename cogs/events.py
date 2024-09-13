@@ -706,6 +706,7 @@ class events(commands.Cog):
         )
         if message.channel.id != 832882989972979723:
             return
+        await asyncio.sleep(2)
         if not (message.attachments or message.embeds):
             return
         await message.add_reaction("\U0001f525")  # fire emoji
