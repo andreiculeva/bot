@@ -703,6 +703,7 @@ class events(commands.Cog):
             846140294688538634,  # member clips
             1278716164754903151,  # comeback
             846138253157335051,  # clips
+            832882989972979723, #test
         )
         if message.channel.id not in channel_whitelist:
             return
@@ -728,6 +729,7 @@ class events(commands.Cog):
             846140294688538634,  # member clips
             1278716164754903151,  # comeback
             846138253157335051,  # clips
+            832882989972979723, # test
         )
         if message.channel.id not in channel_whitelist:
             return
