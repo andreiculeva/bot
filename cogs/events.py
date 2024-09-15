@@ -707,7 +707,7 @@ class events(commands.Cog):
         )
         if message.channel.id not in channel_whitelist:
             return
-        await asyncio.sleep(2)
+        await asyncio.sleep(3)
         if not (message.attachments or message.embeds):
             return
         await message.add_reaction("\U0001f525")  # fire emoji
@@ -735,7 +735,7 @@ class events(commands.Cog):
             return
         if message.author.guild_permissions.administrator:
             return  # ignore admins
-        await asyncio.sleep(2)
+        await asyncio.sleep(3)
         if not (message.attachments or message.embeds):
             try:  # delete if user sent message with no content
                 await message.delete()
