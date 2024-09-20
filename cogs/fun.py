@@ -262,11 +262,9 @@ class BlackJack(discord.ui.View):
         """Function that will simulate the dealers play once the player stands"""
 
         self.update_embed()
+        await interaction.response.defer()
         await asyncio.sleep(1)
-        if interaction.response.is_done():
-            await interaction.edit_original_response(view=self, embed=self.embed)
-        else:
-            await interaction.response.edit_message(view=self, embed=self.embed)
+        await interaction.edit_original_response(view=self, embed=self.embed)
         while self.dealer.score < 17:
 
             self.dealer.hand.append(self.deck.pop())
