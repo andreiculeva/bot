@@ -82,7 +82,7 @@ class BlackJackStatus(Enum):
     LOSE = -1
     TIE = 0
     WIN = 1
-    BLACKJACK = 1.5
+    BLACKJACK = 10
 
 
 class Dealer:
