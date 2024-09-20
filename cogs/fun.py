@@ -207,10 +207,10 @@ class BlackJack(discord.ui.View):
         ):  # player blackjack
             self.status = BlackJackStatus.BLACKJACK
             self.embed.description = "Player blackjack"
-
         self.end_game = True
         self.hit.disabled = True
         self.stand.disabled = True
+        self.update_embed()
         self.stop()
 
     @discord.ui.button(label="hit", style=discord.ButtonStyle.red)
