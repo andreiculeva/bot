@@ -262,7 +262,7 @@ class BlackJack(discord.ui.View):
         """Function that will simulate the dealers play once the player stands"""
 
         self.update_embed()
-        await asyncio.sleep(0.5)
+        await asyncio.sleep(1)
         if interaction.response.is_done():
             await interaction.edit_original_response(view=self, embed=self.embed)
         else:
@@ -271,7 +271,7 @@ class BlackJack(discord.ui.View):
 
             self.dealer.hand.append(self.deck.pop())
             self.update_embed()
-            await asyncio.sleep(0.5)
+            await asyncio.sleep(1)
             await interaction.edit_original_response(view=self, embed=self.embed)
 
     async def interaction_check(
@@ -792,7 +792,7 @@ class Fun(commands.Cog):
         game_view.embed.description += (
             f"\nGame outcome: {game_view.status.value*game_view.player.bet}"
         )
-        await message.edit(view=None, embed=game_view.embed)
+        await message.edit(view=game_view, embed=game_view.embed)
 
     @commands.command()
     async def slidepuzzle(self, ctx: commands.Context, number: int = 3):
