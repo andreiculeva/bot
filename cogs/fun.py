@@ -159,7 +159,11 @@ class BlackJack(discord.ui.View):
                     hand = f"{hand} <:{card}:{card_emoji}>"
             hand = f"{hand} ({self.dealer.score})"
         else:
-            hand = self.dealer.hand[0]
+            card_emoji = emojis.get(self.dealer.hand[0])
+            if card_emoji is None:
+                hand = f"{hand} {self.dealer.hand[0]}"
+            else:
+                hand = f"{hand} <:{self.dealer.hand[0]}:{card_emoji}>"
         self.embed.add_field(name="Dealer", value=hand, inline=False)
         hand = ""
         for card in self.player.hand:
@@ -781,7 +785,7 @@ class Fun(commands.Cog):
         await game_view.wait()
         # at  this point check outcome from view.status
         game_view.embed.description += (
-            f"\nGame outcome: {game_view.status*game_view.player.bet}"
+            f"\nGame outcome: {game_view.status.value*game_view.player.bet}"
         )
         await message.edit(view=None, embed=game_view.embed)
 
