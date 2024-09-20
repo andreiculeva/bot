@@ -145,7 +145,6 @@ class BlackJack(discord.ui.View):
         self.embed.set_author(name=user.display_name, icon_url=user.display_avatar)
         self.embed.set_footer(text=f"Current balance: {balance - bet}")
         self.initialize_game(user.id, bet)
-        super().__init__(timeout=None)
 
     def update_embed(self) -> None:
         self.embed.clear_fields()
