@@ -134,6 +134,7 @@ class Player(Dealer):
 
 class BlackJack(discord.ui.View):
     def __init__(self, user: discord.User, bet: int, balance: int):
+        super().__init__(timeout=None)
         self.embed: discord.Embed = discord.Embed(
             color=discord.Color.orange(), title=f"Blackjack (bet: {bet})"
         )
