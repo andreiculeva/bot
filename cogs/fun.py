@@ -791,6 +791,27 @@ class Fun(commands.Cog):
         else:
             await ctx.message.delete()
 
+    @commands.hybrid_command(name="send")
+    @app_commands.describe(user="Target user")
+    @app_commands.describe(amount="How much you want to pay them")
+    async def send_money(self, ctx:commands.Context, user:discord.User, amount:int):
+        """Use this command to pay someone"""
+        if amount < 0:
+            return await ctx.send("Wtf are you doing", ephemeral=True)
+        user_balance = await self.bot.pool.fetchval("SELECT money FROM economy WHERE user_id = $1", ctx.author.id)
+        if user_balance is None:
+            return await ctx.send("You don't have any money", ephemeral=True)
+        if amount > int(user_balance):
+            return await ctx.send(f"You don't have enough money ({user_balance})", ephemeral=True)
+        await self.bot.pool.execute(
+            "INSERT INTO economy (user_id, money) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET money = economy.money + EXCLUDED.money",
+            user.id,
+            amount,
+        )
+        await self.bot.pool.execute("UPDATE economy SET money = money - $1 WHERE user_id = $2",ctx.author.id, amount)
+        await ctx.send(f"You sent {amount} to {user.mention}")
+
+
     @commands.hybrid_command()
     async def daily(self, ctx:commands.Context):
         """Gives you a bit of money"""
@@ -812,6 +833,8 @@ class Fun(commands.Cog):
     async def blackjack(self, ctx: commands.Context, bet: int = 100):
         """Play a game of blackjack"""
 
+        if bet < 0:
+            return await ctx.send("Wtf are you doing", ephemeral=True)
         author_balance = await self.bot.pool.fetchrow(
             "SELECT * FROM economy WHERE user_id = $1", ctx.author.id
         )
