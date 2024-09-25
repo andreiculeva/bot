@@ -835,7 +835,7 @@ class Fun(commands.Cog):
     async def daily(self, ctx: commands.Context):
         """Gives you a bit of money"""
         cooldown = self.cooldowns.get(ctx.author.id)
-        if cooldown > discord.utils.utcnow():
+        if (cooldown is not None) and cooldown > discord.utils.utcnow():
             return await ctx.send(
                 f"Try again {discord.utils.format_dt(cooldown, 'R')}", ephemeral=True
             )
