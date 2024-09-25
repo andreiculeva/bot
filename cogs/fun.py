@@ -801,7 +801,7 @@ class Fun(commands.Cog):
         )
         if money is None:
             return await ctx.send(f"{user} doesn't have any money", ephemeral=True)
-        await ctx.send(f"{user} has {money} money")
+        await ctx.send(f"{user} has {money} coins")
 
     @commands.hybrid_command(name="send")
     @app_commands.describe(user="Target user")
