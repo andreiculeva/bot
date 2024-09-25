@@ -863,7 +863,7 @@ class Fun(commands.Cog):
             new_money,
         )
         game_view.embed.description += f"\nGame outcome: {game_result:+}"
-        game_view.embed.set_footer = f"New balance: {new_money}"
+        game_view.embed.set_footer(text=f"New balance: {new_money}")
         await message.edit(view=game_view, embed=game_view.embed)
 
     @commands.command()
