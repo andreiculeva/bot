@@ -349,6 +349,9 @@ class Fun(commands.Cog):
     def __init__(self, bot: bot.AndreiBot) -> None:
         super().__init__()
         self.bot = bot
+        self.cooldowns: dict[int, datetime.datetime] = (
+            {}
+        )  # not saving in the database idc too much if it gets exploited
 
     @commands.hybrid_command()
     @discord.app_commands.describe(word="The words to search for")
@@ -787,6 +790,22 @@ class Fun(commands.Cog):
             await ctx.send("done", ephemeral=True)
         else:
             await ctx.message.delete()
+
+    @commands.hybrid_command()
+    async def daily(self, ctx:commands.Context):
+        """Gives you a bit of money"""
+        cooldown=self.cooldowns.get(ctx.author.id)
+        if cooldown>discord.utils.utcnow():
+            return await ctx.send(f"Try again {discord.utils.format_dt(cooldown, "R")}", ephemeral=True)
+        
+        new_money = random.randint(500, 2000)
+        new_balance = await self.bot.pool.fetchval(
+            "INSERT INTO economy (user_id, money) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET money = economy.money + EXCLUDED.money RETURNING money",
+            ctx.author.id,
+            new_money,
+        )
+        await ctx.send(f"You earned {new_money}, new balance: {new_balance}")
+        self.cooldowns[ctx.author.id] = discord.utils.utcnow() + datetime.timedelta(days=1)
 
     @commands.hybrid_command(aliases=["bj"])
     @app_commands.describe(bet="How much you want to bet (default 100)")
