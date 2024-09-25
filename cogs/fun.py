@@ -808,6 +808,8 @@ class Fun(commands.Cog):
     @app_commands.describe(amount="How much you want to pay them")
     async def send_money(self, ctx: commands.Context, user: discord.User, amount: int):
         """Use this command to pay someone"""
+        if user == ctx.author:
+            return await ctx.send("Wtf are you doing", ephemeral=True)
         if amount < 0:
             return await ctx.send("Wtf are you doing", ephemeral=True)
         user_balance = await self.bot.pool.fetchval(
