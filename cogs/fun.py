@@ -817,7 +817,7 @@ class Fun(commands.Cog):
         """Gives you a bit of money"""
         cooldown=self.cooldowns.get(ctx.author.id)
         if cooldown>discord.utils.utcnow():
-            return await ctx.send(f"Try again {discord.utils.format_dt(cooldown, "R")}", ephemeral=True)
+            return await ctx.send(f"Try again {discord.utils.format_dt(cooldown, 'R')}", ephemeral=True)
         
         new_money = random.randint(500, 2000)
         new_balance = await self.bot.pool.fetchval(
