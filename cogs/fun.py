@@ -134,7 +134,7 @@ class Player(Dealer):
 
 class BlackJack(discord.ui.View):
     def __init__(self, user: discord.User, bet: int, balance: int):
-        super().__init__(timeout=None)
+        super().__init__(timeout=300)
         self.embed: discord.Embed = discord.Embed(
             color=discord.Color.orange(), title=f"Blackjack (bet: {bet})"
         )
@@ -145,6 +145,14 @@ class BlackJack(discord.ui.View):
         self.embed.set_author(name=user.display_name, icon_url=user.display_avatar)
         self.embed.set_footer(text=f"Current balance: {balance - bet}")
         self.initialize_game(user.id, bet)
+
+    async def on_timeout(self) -> None:
+        self.status = BlackJackStatus.TIE
+        self.end_game = True
+        self.embed.description = "Timed out"
+        self.hit.disabled = True
+        self.stand.disabled = True
+        self.update_embed()
 
     def update_embed(self) -> None:
         self.embed.clear_fields()
@@ -780,12 +788,29 @@ class Fun(commands.Cog):
         else:
             await ctx.message.delete()
 
-    @commands.command(aliases=["bj"])
-    async def blackjack(self, ctx: commands.Context):
-        """Play blackjack (no betting for now)"""
-        game_view = BlackJack(ctx.author, 10, 100)
+    @commands.hybrid_command(aliases=["bj"])
+    @app_commands.describe(bet="How much you want to bet (default 100)")
+    async def blackjack(self, ctx: commands.Context, bet: int = 100):
+        """Play a game of blackjack"""
+
+        author_balance = await self.bot.pool.fetchrow(
+            "SELECT * FROM economy WHERE user_id = $1", ctx.author.id
+        )
+        if not author_balance:
+            return await ctx.send("Earn some money first", ephemeral=True)
+        balance: int = author_balance["money"]
+        if bet > balance:
+            return await ctx.send(
+                f"You don't have enough money! ({balance}/{bet})", ephemeral=True
+            )
+        
+
+        game_view = BlackJack(ctx.author, bet, balance)
         message = await ctx.send(view=game_view, embed=game_view.embed)
-        await game_view.wait()
+        timed_out = await game_view.wait()
+        if timed_out:
+            await message.edit(view=game_view, embed=game_view.embed)
+            return
         # at  this point check outcome from view.status
         game_view.embed.description += (
             f"\nGame outcome: {game_view.status.value*game_view.player.bet}"
