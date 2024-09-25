@@ -791,34 +791,55 @@ class Fun(commands.Cog):
         else:
             await ctx.message.delete()
 
+    @commands.hybrid_command()
+    @app_commands.describe(user="Target user")
+    async def balance(self, ctx: commands.Context, user: discord.User = None):
+        """Check someone's balance"""
+        user = user or ctx.author
+        money = await self.bot.pool.fetchval(
+            "SELECT money FROM economy WHERE user_id = $1", user.id
+        )
+        if money is None:
+            return await ctx.send(f"{user} doesn't have any money", ephemeral=True)
+        await ctx.send(f"{user} has {money} money")
+
     @commands.hybrid_command(name="send")
     @app_commands.describe(user="Target user")
     @app_commands.describe(amount="How much you want to pay them")
-    async def send_money(self, ctx:commands.Context, user:discord.User, amount:int):
+    async def send_money(self, ctx: commands.Context, user: discord.User, amount: int):
         """Use this command to pay someone"""
         if amount < 0:
             return await ctx.send("Wtf are you doing", ephemeral=True)
-        user_balance = await self.bot.pool.fetchval("SELECT money FROM economy WHERE user_id = $1", ctx.author.id)
+        user_balance = await self.bot.pool.fetchval(
+            "SELECT money FROM economy WHERE user_id = $1", ctx.author.id
+        )
         if user_balance is None:
             return await ctx.send("You don't have any money", ephemeral=True)
         if amount > int(user_balance):
-            return await ctx.send(f"You don't have enough money ({user_balance})", ephemeral=True)
+            return await ctx.send(
+                f"You don't have enough money ({user_balance})", ephemeral=True
+            )
         await self.bot.pool.execute(
             "INSERT INTO economy (user_id, money) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET money = economy.money + EXCLUDED.money",
             user.id,
             amount,
         )
-        await self.bot.pool.execute("UPDATE economy SET money = money - $1 WHERE user_id = $2",ctx.author.id, amount)
+        await self.bot.pool.execute(
+            "UPDATE economy SET money = money - $1 WHERE user_id = $2",
+            ctx.author.id,
+            amount,
+        )
         await ctx.send(f"You sent {amount} to {user.mention}")
 
-
     @commands.hybrid_command()
-    async def daily(self, ctx:commands.Context):
+    async def daily(self, ctx: commands.Context):
         """Gives you a bit of money"""
-        cooldown=self.cooldowns.get(ctx.author.id)
-        if cooldown>discord.utils.utcnow():
-            return await ctx.send(f"Try again {discord.utils.format_dt(cooldown, 'R')}", ephemeral=True)
-        
+        cooldown = self.cooldowns.get(ctx.author.id)
+        if cooldown > discord.utils.utcnow():
+            return await ctx.send(
+                f"Try again {discord.utils.format_dt(cooldown, 'R')}", ephemeral=True
+            )
+
         new_money = random.randint(500, 2000)
         new_balance = await self.bot.pool.fetchval(
             "INSERT INTO economy (user_id, money) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET money = economy.money + EXCLUDED.money RETURNING money",
@@ -826,7 +847,9 @@ class Fun(commands.Cog):
             new_money,
         )
         await ctx.send(f"You earned {new_money}, new balance: {new_balance}")
-        self.cooldowns[ctx.author.id] = discord.utils.utcnow() + datetime.timedelta(days=1)
+        self.cooldowns[ctx.author.id] = discord.utils.utcnow() + datetime.timedelta(
+            days=1
+        )
 
     @commands.hybrid_command(aliases=["bj"])
     @app_commands.describe(bet="How much you want to bet (default 100)")
