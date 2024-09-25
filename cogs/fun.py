@@ -803,7 +803,6 @@ class Fun(commands.Cog):
             return await ctx.send(
                 f"You don't have enough money! ({balance}/{bet})", ephemeral=True
             )
-        
 
         game_view = BlackJack(ctx.author, bet, balance)
         message = await ctx.send(view=game_view, embed=game_view.embed)
@@ -811,10 +810,18 @@ class Fun(commands.Cog):
         if timed_out:
             await message.edit(view=game_view, embed=game_view.embed)
             return
-        # at  this point check outcome from view.status
-        game_view.embed.description += (
-            f"\nGame outcome: {game_view.status.value*game_view.player.bet}"
+        if game_view.status == BlackJackStatus.TIE:
+            return await message.edit(view=game_view, embed=game_view.embed)
+        game_result = game_view.status.value * bet
+        new_money = game_result + balance
+
+        await self.bot.pool.execute(
+            "INSERT INTO economy (user_id, money) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET money=excluded.money",
+            ctx.author.id,
+            new_money,
         )
+        game_view.embed.description += f"\nGame outcome: {game_result:+}"
+        game_view.embed.set_footer = f"New balance: {new_money}"
         await message.edit(view=game_view, embed=game_view.embed)
 
     @commands.command()
