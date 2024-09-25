@@ -818,9 +818,8 @@ class Fun(commands.Cog):
         if user_balance is None:
             return await ctx.send("You don't have any money", ephemeral=True)
         if amount > int(user_balance):
-            return await ctx.send(
-                f"You don't have enough money ({user_balance})", ephemeral=True
-            )
+            return await ctx.send(f"You don't have enough money ({user_balance})", ephemeral=True)
+            
         await self.bot.pool.execute(
             "INSERT INTO economy (user_id, money) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET money = economy.money + EXCLUDED.money",
             user.id,
@@ -828,8 +827,8 @@ class Fun(commands.Cog):
         )
         await self.bot.pool.execute(
             "UPDATE economy SET money = money - $1 WHERE user_id = $2",
-            ctx.author.id,
             amount,
+            ctx.author.id,
         )
         await ctx.send(f"You sent {amount} to {user.mention}")
 
