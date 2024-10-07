@@ -22,7 +22,7 @@ class Music(commands.Cog):
         return self.bot.lavalink.player_manager.create(guild.id)
 
     async def cog_load(self):
-        lavalink.add_event_hook(self.track_hook)
+        self.bot.lavalink.add_event_hook(self.track_hook)
 
     async def cog_unload(self):
         """Cog unload handler. This removes any event hooks that were registered."""
