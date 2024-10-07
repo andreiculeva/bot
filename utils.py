@@ -3108,19 +3108,7 @@ class TrackConverter(commands.Converter):
         return self.to_return
 
 
-class RadioTransformer(discord.app_commands.Transformer):
-    async def transform(self, interaction: discord.Interaction, value: str) -> str:
-        return value
 
-    async def autocomplete(self, interaction: discord.Interaction, value: str):
-        to_return = []
-        _bot: bot.AndreiBot = interaction.client
-        for radio in _bot.radios.values():
-            if value.lower() in radio["title"].lower():
-                to_return.append(
-                    discord.app_commands.Choice(name=radio["title"], value=radio["id"])
-                )
-        return to_return[:25]
 
 
 async def get_user_reference(message: discord.Message) -> discord.User:
