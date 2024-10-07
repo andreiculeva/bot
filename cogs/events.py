@@ -703,13 +703,25 @@ class events(commands.Cog):
             846140294688538634,  # member clips
             1278716164754903151,  # comeback
             846138253157335051,  # clips
-            832882989972979723, #test
+            832882989972979723,  # test
         )
         if message.channel.id not in channel_whitelist:
             return
         await asyncio.sleep(3)
-        if not (message.attachments or message.embeds):
+        if not (
+            message.attachments
+            or message.embeds
+            or (
+                message.reference
+                and message.reference.cached_message
+                and (
+                    message.reference.cached_message.attachments
+                    or message.reference.cached_message.embeds
+                )
+            )
+        ):
             return
+
         await message.add_reaction("\U0001f525")  # fire emoji
         await message.add_reaction("\U0001f602")  # laugh emoji
         emoji_ids = (
@@ -729,14 +741,14 @@ class events(commands.Cog):
             846140294688538634,  # member clips
             1278716164754903151,  # comeback
             846138253157335051,  # clips
-            832882989972979723, # test
+            832882989972979723,  # test
         )
         if message.channel.id not in channel_whitelist:
             return
         if message.author.guild_permissions.administrator:
             return  # ignore admins
         await asyncio.sleep(3)
-        if not (message.attachments or message.embeds):
+        if not (message.attachments or message.embeds or message.reference):
             try:  # delete if user sent message with no content
                 await message.delete()
             except (discord.Forbidden, discord.NotFound, discord.HTTPException):
