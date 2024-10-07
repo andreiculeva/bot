@@ -5,7 +5,7 @@ import aiohttp
 import asyncio
 import asyncpg
 from utils import PaginatedHelpCommand
-
+import lavalink
 
 ANDREI2_ID = 605398335691554827
 ANDREI_ID = 393033826474917889
@@ -36,8 +36,8 @@ class AndreiBot(commands.Bot):
         self.launch_time = discord.utils.utcnow()
         self.prefixes = {}
         self.pool: asyncpg.Pool
-        self.log_channel:discord.TextChannel
-    
+        self.log_channel: discord.TextChannel
+
     async def on_ready(self):
         self.log_channel = self.get_channel(865124093999972362)
 
@@ -48,12 +48,13 @@ class AndreiBot(commands.Bot):
 
     async def setup_hook(self) -> None:
         self.session = aiohttp.ClientSession()
+        self.lavalink = lavalink.Client(self.user.id)
+        self.lavalink.add_node("lavalink-legacy.jompo.cloud", 2333, "jompo")
         await self.update_prefixes()
         await self.load_extension("jishaku")
         for file in pathlib.Path("cogs").glob("**/[!_]*.py"):
             ext = ".".join(file.parts).removesuffix(".py")
             await self.load_extension(ext)
-
 
 
 async def get_prefix(bot: AndreiBot, message: discord.Message) -> list[str]:
