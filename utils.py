@@ -3051,26 +3051,7 @@ class TrackConverter(commands.Converter):
             ctx.guild.id
         )
         query = query.strip("<>")
-        load_spotify_playlist = False
         self.to_return = 0
-        if spotify_rx.search(query):
-            if "track" in query:
-                song = sp.track(query)
-                query = f'{song["name"]} {song["artists"][0]["name"]} lyrics'
-            elif "playlist" in query:
-                load_spotify_playlist = True
-                songsearch = []
-                playlist = sp.playlist(query)
-                results = playlist["tracks"]
-                tracks: list = results["items"]
-                while results["next"]:
-                    results = sp.next(results)
-                    tracks.extend(results["items"])
-                for song in tracks:
-                    song = song["track"]
-                    song_name = song["name"]
-                    song_artist = song["artists"][0]["name"]
-                    songsearch.append(f"ytsearch:{song_name} {song_artist}")
         if not url_rx.match(query):
             query = f"ytsearch:{query}"
 
@@ -3085,23 +3066,17 @@ class TrackConverter(commands.Converter):
             if (current == 0) and not player.is_playing:
                 await player.play()
 
-        if load_spotify_playlist:
-            coro_list = []
-            for i, k in enumerate(songsearch):
-                coro_list.append(_inner_playlist(k, i))
-            async with ctx.typing():
-                await asyncio.gather(*coro_list)
-        else:
-            results: lavalink.LoadResult = await player.node.get_tracks(query)
-            if not results or not results.tracks:
-                raise commands.BadArgument("I couldn't find anything")
-            if results.load_type == lavalink.LoadType.PLAYLIST:
-                for track in results.tracks:
-                    player.add(track, ctx.author.id)
-                    self.to_return += 1
-            else:
+
+        results: lavalink.LoadResult = await player.node.get_tracks(query)
+        if not results or not results.tracks:
+            raise commands.BadArgument("I couldn't find anything")
+        if results.load_type == lavalink.LoadType.PLAYLIST:
+            for track in results.tracks:
+                player.add(track, ctx.author.id)
                 self.to_return += 1
-                player.add(results.tracks[0], ctx.author.id)
+        else:
+            self.to_return += 1
+            player.add(results.tracks[0], ctx.author.id)
 
         if not self.to_return:
             raise commands.BadArgument("I couldn't find anything")
