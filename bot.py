@@ -49,7 +49,7 @@ class AndreiBot(commands.Bot):
     async def setup_hook(self) -> None:
         self.session = aiohttp.ClientSession()
         self.lavalink = lavalink.Client(self.user.id)
-        self.lavalink.add_node("lavalink-legacy.jompo.cloud", 2333, "jompo", "eu")
+        self.lavalink.add_node("node.lewdhutao.my.eu.org", 80, "youshallnotpass", "eu")
         await self.update_prefixes()
         await self.load_extension("jishaku")
         for file in pathlib.Path("cogs").glob("**/[!_]*.py"):
