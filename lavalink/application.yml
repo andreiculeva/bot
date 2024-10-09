@@ -12,9 +12,6 @@ plugins:
     clients:
       - WEB
       - MUSIC
-      - TVHTML5EMBEDDED
-      - WEBEMBEDDED
-      - MEDIA_CONNECT
 
 lavalink:
   plugins:
