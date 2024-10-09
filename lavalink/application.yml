@@ -4,21 +4,27 @@ server: # REST and WS server
   http2:
     enabled: false # Whether to enable HTTP/2 support
 plugins:
-#  name: # Name of the plugin
-#    some_key: some_value # Some key-value pair for the plugin
-#    another_key: another_value
+  youtube:
+    enabled: true
+    allowSearch: true
+    allowDirectVideoIds: true
+    allowDirectPlaylistIds: true
+    clients:
+      - MUSIC
+      - TVHTML5EMBEDDED
+      - ANDROID_MUSIC
+      - ANDROID_TESTSUITE
+      - WEB
+      - WEBEMBEDDED
+      - ANDROID
+      - ANDROID_LITE
+      - MEDIA_CONNECT
+      - IOS
+
 lavalink:
   plugins:
-    youtube:
-      enabled: true
-      allowSearch: true
-      allowDirectVideoIds: true
-      allowDirectPlaylistIds: true
-      clients:
-        - MUSIC
-        - ANDROID_TESTSUITE
-        - WEB
-        - TVHTML5EMBEDDED
+    - dependency: "dev.lavalink.youtube:youtube-plugin:1.8.3"
+      snapshot: false
   #    - dependency: "com.github.example:example-plugin:1.0.0" # required, the coordinates of your plugin
   #      repository: "https://maven.example.com/releases" # optional, defaults to the Lavalink releases repository by default
   #      snapshot: false # optional, defaults to false, used to tell Lavalink to use the snapshot repository instead of the release repository
