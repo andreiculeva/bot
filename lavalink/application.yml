@@ -14,7 +14,6 @@ plugins:
       - MUSIC
       - TVHTML5EMBEDDED
       - ANDROID_MUSIC
-      - ANDROID_TESTSUITE
       - WEBEMBEDDED
       - ANDROID
       - ANDROID_LITE
