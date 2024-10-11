@@ -449,7 +449,7 @@ class Moderation(commands.Cog):
         await ctx.send(embed=em)
 
     @commands.command()
-    @commands.has_guild_permissions(ban_members=True)
+    @commands.has_permissions(ban_members=True)
     async def unban(
         self, ctx: commands.Context, user: discord.User, reason: str = None
     ):
