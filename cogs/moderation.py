@@ -134,6 +134,7 @@ class Moderation(commands.Cog):
         self.bot = bot
 
     @commands.has_permissions(administrator=True)
+    @commands.command
     async def logchannel(
         self,
         ctx: commands.Context[bot.AndreiBot],
