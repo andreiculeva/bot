@@ -459,14 +459,10 @@ class Moderation(commands.Cog):
         else:
             reason += f"Done by {ctx.author} (ID: {ctx.author.id})"
         try:
-            banentry = await ctx.guild.fetch_ban(discord.Object(id=int(user)))
+            await ctx.guild.unban(user, reason=reason)
         except discord.NotFound:
             raise commands.CommandInvokeError(f"{user} is not banned")
-        try:
-            await ctx.guild.unban(banentry.user, reason=reason)
-        except discord.NotFound:
-            raise commands.CommandInvokeError(f"{user} is not banned")
-        await ctx.send(f"unbanned {banentry.user} (ID: {banentry.user.id})")
+        await ctx.send(f"unbanned {user} (ID: {user.id})")
 
     @commands.command()
     @commands.has_permissions(ban_members=True)
