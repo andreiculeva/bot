@@ -104,6 +104,8 @@ class events(commands.Cog):
             em.description = f"{error.args[0]}"
         elif isinstance(error, commands.BadArgument):
             em.description = str(error)
+        elif isinstance(error, commands.errors.CommandInvokeError):
+            em.description = str(error)
         elif isinstance(error, commands.CommandInvokeError):
             em.description = str(error)
         else:

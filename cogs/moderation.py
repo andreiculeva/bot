@@ -461,7 +461,7 @@ class Moderation(commands.Cog):
         try:
             await ctx.guild.unban(user, reason=reason)
         except discord.NotFound:
-            raise commands.CommandInvokeError(f"{user} is not banned")
+            raise commands.errors.CommandInvokeError(f"{user} is not banned")
         await ctx.send(f"unbanned {user} (ID: {user.id})")
 
     @commands.command()
