@@ -133,20 +133,26 @@ class Moderation(commands.Cog):
         super().__init__()
         self.bot = bot
 
-
-
     @commands.has_permissions(administrator=True)
-    async def logchannel(self, ctx:commands.Context[bot.AndreiBot], channel:typing.Optional[discord.TextChannel]=None):
+    async def logchannel(
+        self,
+        ctx: commands.Context[bot.AndreiBot],
+        channel: typing.Optional[discord.TextChannel] = None,
+    ):
         """Sets the log channel for this server.
         If no channel is given the bot stops logging"""
-        
-        em=discord.Embed(color=discord.Color.orange())
+
+        em = discord.Embed(color=discord.Color.orange())
         if channel is None:
-            await self.bot.pool.execute("DELETE FROM log_channels WHERE guild_id=$1", ctx.guild.id)
-            em.description="Deleted log channel for this server"
+            await self.bot.pool.execute(
+                "DELETE FROM log_channels WHERE guild_id=$1", ctx.guild.id
+            )
+            em.description = "Deleted log channel for this server"
         else:
-            await self.bot.pool.execute("INSERT INTO log_channels (server_id, channel_id) VALUES ($1, $2) ON CONFLICT (server_id) DO UPDATE SET channel_id=excluded.channel_id")
-            em.description=f"Set log channel to {channel.mention}"
+            await self.bot.pool.execute(
+                "INSERT INTO log_channels (server_id, channel_id) VALUES ($1, $2) ON CONFLICT (server_id) DO UPDATE SET channel_id=excluded.channel_id"
+            )
+            em.description = f"Set log channel to {channel.mention}"
         await ctx.send(embed=em)
 
     @commands.has_permissions(manage_messages=True)
@@ -443,6 +449,26 @@ class Moderation(commands.Cog):
         await ctx.send(embed=em)
 
     @commands.command()
+    @commands.has_guild_permissions(ban_members=True)
+    async def unban(
+        self, ctx: commands.Context, user: discord.User, reason: str = None
+    ):
+        """Unbans a user from this server"""
+        if reason is None:
+            reason = f"Done by {ctx.author} (ID: {ctx.author.id})"
+        else:
+            reason += f"Done by {ctx.author} (ID: {ctx.author.id})"
+        try:
+            banentry = await ctx.guild.fetch_ban(discord.Object(id=int(user)))
+        except discord.NotFound:
+            raise commands.CommandInvokeError(f"{user} is not banned")
+        try:
+            await ctx.guild.unban(banentry.user, reason=reason)
+        except discord.NotFound:
+            raise commands.CommandInvokeError(f"{user} is not banned")
+        await ctx.send(f"unbanned {banentry.user} (ID: {banentry.user.id})")
+
+    @commands.command()
     @commands.has_permissions(ban_members=True)
     async def ban(
         self, ctx: commands.Context, members: commands.Greedy[Banuser], *, reason=None
@@ -497,7 +523,8 @@ class Moderation(commands.Cog):
         self, ctx: commands.Context, members: commands.Greedy[Banuser], *, reason=None
     ):
         """Allows you to softban (ban and unban with 7 days message delete) multiple discord users.
-        If more than one member is passed, converting errors will silently be ignored."""
+        If more than one member is passed, converting errors will silently be ignored.
+        """
 
         if ref := await utils.get_member_reference(ctx.message):
             members.append(ref)
@@ -550,7 +577,8 @@ class Moderation(commands.Cog):
         self, ctx: commands.Context, members: commands.Greedy[Banuser], *, reason=None
     ):
         """Allows you to kick multiple members.
-        If more than one member is passed, converting errors will silently be ignored."""
+        If more than one member is passed, converting errors will silently be ignored.
+        """
         if reason is None:
             reason = f"Done by {ctx.author} (ID: {ctx.author.id})"
         members = await sanitize_targets(ctx, members)
