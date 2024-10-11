@@ -74,14 +74,7 @@ class events(commands.Cog):
             )
         elif isinstance(error, discord.Forbidden):
             em.description = f"I am missing permissions"
-        elif isinstance(error, MissingPermissions):
-            if ctx.author.id in ctx.bot.owner_ids:
-                await ctx.reinvoke(restart=True)  # bypass owners
-                return
-            x = ", ".join(
-                [f"`{p.replace('_', ' ')}`" for p in error.missing_permissions]
-            )
-            em.description = f"You are missing the {x} perms"
+
         elif isinstance(error, RoleNotFound):
             em.description = (
                 f"I couldn't find the role `{error.argument}` in this server"
@@ -108,6 +101,14 @@ class events(commands.Cog):
             em.description = str(error)
         elif isinstance(error, commands.CommandInvokeError):
             em.description = str(error)
+        elif isinstance(error, MissingPermissions):
+            if ctx.author.id in ctx.bot.owner_ids:
+                await ctx.reinvoke(restart=True)  # bypass owners
+                return
+            x = ", ".join(
+                [f"`{p.replace('_', ' ')}`" for p in error.missing_permissions]
+            )
+            em.description = f"You are missing the {x} perms"
         else:
             if ctx.author.id in (bot.ANDREI2_ID, bot.ANDREI_ID):
                 if isinstance(error, str):  # ??
