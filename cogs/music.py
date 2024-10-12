@@ -17,15 +17,19 @@ from pytimeparse.timeparse import timeparse
 class Music(commands.Cog):
     def __init__(self, bot: bot.AndreiBot):
         self.bot = bot
-
+        
     def get_player(self, guild: discord.Guild) -> lavalink.DefaultPlayer:
         return self.bot.lavalink.player_manager.create(guild.id)
 
     async def cog_load(self):
+        self.bot.lavalink.add_node("node.lewdhutao.my.eu.org", 80, "youshallnotpass", "eu")
         self.bot.lavalink.add_event_hook(self.track_hook)
 
     async def cog_unload(self):
         """Cog unload handler. This removes any event hooks that were registered."""
+        for node in self.bot.lavalink.node_manager.nodes:
+            await node.destroy()
+            self.bot.lavalink.node_manager.remove(node)
         self.bot.lavalink._event_hooks.clear()
 
     async def track_hook(self, event):

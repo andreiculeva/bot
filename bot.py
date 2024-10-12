@@ -38,6 +38,7 @@ class AndreiBot(commands.Bot):
         self.prefixes = {}
         self.pool: asyncpg.Pool
         self.log_channel: discord.TextChannel
+        self.lavalink: lavalink.Client
 
     async def on_ready(self):
         self.log_channel = self.get_channel(865124093999972362)
@@ -50,8 +51,6 @@ class AndreiBot(commands.Bot):
     async def setup_hook(self) -> None:
         self.session = aiohttp.ClientSession()
         self.lavalink = lavalink.Client(self.user.id)
-        #self.lavalink.add_node("localhost", 2333, "youshallnotpass", "eu")
-        self.lavalink.add_node("node.lewdhutao.my.eu.org", 80, "youshallnotpass", "eu")
         await self.update_prefixes()
         await self.load_extension("jishaku")
         for file in pathlib.Path("cogs").glob("**/[!_]*.py"):
