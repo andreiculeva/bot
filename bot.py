@@ -7,6 +7,7 @@ import asyncpg
 from utils import PaginatedHelpCommand
 import lavalink
 
+ANDREI3_ID = 815534484400373760
 ANDREI2_ID = 605398335691554827
 ANDREI_ID = 393033826474917889
 FLASH_ID = 206103720512061441
@@ -27,7 +28,7 @@ class AndreiBot(commands.Bot):
             case_insensitive=True,
             status=status,
             activity=activity,
-            owner_ids=(ANDREI_ID, ANDREI2_ID, FLASH_ID),
+            owner_ids=(ANDREI_ID, ANDREI2_ID, FLASH_ID, ANDREI3_ID),
             max_messages=100000000,
             **options,
         )
