@@ -715,11 +715,11 @@ class events(commands.Cog):
             message.attachments
             or message.embeds
             or (
-                message.reference
-                and message.reference.cached_message
+                message.message_snapshots
+                and message.message_snapshots[0].cached_message
                 and (
-                    message.reference.cached_message.attachments
-                    or message.reference.cached_message.embeds
+                    message.message_snapshots[0].cached_message.attachments
+                    or message.message_snapshots[0].cached_message.embeds
                 )
             )
         ):
@@ -751,7 +751,18 @@ class events(commands.Cog):
         if message.author.guild_permissions.administrator:
             return  # ignore admins
         await asyncio.sleep(3)
-        if not (message.attachments or message.embeds or message.reference):
+        if not (
+            message.attachments
+            or message.embeds
+            or (
+                message.message_snapshots
+                and message.message_snapshots[0].cached_message
+                and (
+                    message.message_snapshots[0].cached_message.attachments
+                    or message.message_snapshots[0].cached_message.embeds
+                )
+            )
+        ):
             try:  # delete if user sent message with no content
                 await message.delete()
             except (discord.Forbidden, discord.NotFound, discord.HTTPException):
