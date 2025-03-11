@@ -1,0 +1,5 @@
+.env
+__pycache__
+cogs/__pycache__
+pg.py
+cogs/game.py
