@@ -1041,7 +1041,10 @@ class Utility(commands.Cog):
         for cog in cogs:
             if cog in ("Jishaku"):
                 continue
-            await ctx.bot.unload_extension(f"cogs.{cog.lower()}")
+            if cog.lower() == "game":
+                await ctx.bot.unload_extension(f"cogs.game.game")
+            else:
+                await ctx.bot.unload_extension(f"cogs.{cog.lower()}")
         reloaded = []
         for file in pathlib.Path("cogs").glob("**/[!_]*.py"):
             if file.name == "game":
