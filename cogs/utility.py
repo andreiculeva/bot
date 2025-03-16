@@ -1044,7 +1044,10 @@ class Utility(commands.Cog):
             await ctx.bot.unload_extension(f"cogs.{cog.lower()}")
         reloaded = []
         for file in pathlib.Path("cogs").glob("**/[!_]*.py"):
-            ext = ".".join(file.parts).removesuffix(".py")
+            if file.name == "game":
+                ext = "game.game"
+            else:
+                ext = ".".join(file.parts).removesuffix(".py")
             await ctx.bot.load_extension(ext)
             reloaded.append(ext)
         await ctx.send(f"Reloaded {', '.join(reloaded)}", mention_author=False)
