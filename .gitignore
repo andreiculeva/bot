@@ -3,3 +3,6 @@ __pycache__
 cogs/__pycache__
 pg.py
 cogs/game.py
+cog.py
+logs2.py
+.gitignore
