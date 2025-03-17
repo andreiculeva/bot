@@ -756,7 +756,7 @@ class Fun(commands.Cog):
         content: str,
     ):
         """Sends a fake message in the chat"""
-        if not ctx.author.guild_permissions.manage_messages:
+        if not ctx.author.guild_permissions.administrator:
             return await ctx.send(
                 "You need admin perms for that", ephemeral=True
             )
