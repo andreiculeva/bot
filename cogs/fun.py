@@ -747,7 +747,7 @@ class Fun(commands.Cog):
     @discord.app_commands.describe(
         user="The message will look like he sent it", content="the message's content"
     )
-    @discord.app_commands.default_permissions(manage_messages=True)
+    @discord.app_commands.default_permissions(administrator=True)
     async def fakemessage(
         self,
         ctx: commands.Context,
@@ -758,7 +758,7 @@ class Fun(commands.Cog):
         """Sends a fake message in the chat"""
         if not ctx.author.guild_permissions.manage_messages:
             return await ctx.send(
-                "You need the `manage messages` permissions", ephemeral=True
+                "You need admin perms for that", ephemeral=True
             )
         if ctx.interaction:
             await ctx.defer(ephemeral=True)
@@ -772,16 +772,20 @@ class Fun(commands.Cog):
                 break
         if webhook is None:
             webhook = await ctx.channel.create_webhook(name=str(ctx.bot))
-        await webhook.send(
+        message = await webhook.send(
+            wait = True,
             username=user.display_name,
             avatar_url=user.display_avatar,
             content=content,
             allowed_mentions=discord.AllowedMentions(everyone=False),
         )
+        
         if ctx.interaction:
             await ctx.send("done", ephemeral=True)
         else:
             await ctx.message.delete()
+        if message is not None:
+            await self.bot.log_channel.send(f"{ctx.author} sent {message.jump_url}")
 
     @commands.hybrid_command()
     @app_commands.describe(user="Target user")
