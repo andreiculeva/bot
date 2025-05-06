@@ -3168,3 +3168,24 @@ class TikTokPageSource(menus.ListPageSource):
         menu.embed.set_author(name=self.author, icon_url=self.author.display_avatar)
         menu.embed.set_image(url=entry)
         return menu.embed
+
+
+
+class DateConverter(commands.Converter):
+    async def convert(self, ctx: commands.Context, argument: str):
+        """Converts a date string in the format dd/mm/yyyy to a datetime.date object."""
+        try:
+            if len(argument.split("/")) == 2:  # Format: dd/mm
+                date = datetime.datetime.strptime(argument, "%d/%m").date()
+                return date.replace(year=0)  # if year is zero they haven't provided their birth year
+            elif len(argument.split("/")) == 3:  # Format: dd/mm/yyyy
+                date = datetime.datetime.strptime(argument, "%d/%m/%Y").date()
+                return date
+            else:
+                raise commands.BadArgument(
+                f"Invalid date format: {argument}. Use dd/mm or dd/mm/yyyy."
+            )
+        except ValueError:
+            raise commands.BadArgument(
+                f"Invalid date format: {argument}. Use dd/mm or dd/mm/yyyy."
+            )
