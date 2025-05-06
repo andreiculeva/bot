@@ -890,6 +890,140 @@ class Fun(commands.Cog):
         game_view.embed.set_footer(text=f"New balance: {new_money}")
         await message.edit(view=game_view, embed=game_view.embed)
 
+
+    @commands.hybrid_command(name="age")
+    async def get_age(self, ctx: commands.Context, user: typing.Optional[discord.User] = None):
+        """Get the age of a user, if present in the database"""
+        user = user or ctx.author
+
+        # Recupera il compleanno dal database
+        birthdate:datetime.date = await self.bot.pool.fetchval(
+            "SELECT birthdate FROM birthdays WHERE user_id = $1",
+            user.id
+        )
+
+        if not birthdate:
+            # Mostra un errore se il compleanno non è stato salvato
+            if user == ctx.author:
+                await ctx.send("You haven't set your birthday yet. Use `/birthday set` to set it.", ephemeral=True)
+            else:
+                await ctx.send(f"{user.mention} hasn't set their birthday yet.", ephemeral=True)
+            return
+        
+        if birthdate.year == 0:
+            if user == ctx.author:
+                await ctx.send("You haven't provided your birth year. Use `/birthday set` to update it.", ephemeral=True)
+            else:
+                await ctx.send(f"{user.mention} hasn't provided their birth year.", ephemeral=True)
+            return
+
+        # Calcola l'età
+        today = datetime.date.today()
+        age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
+
+        # Mostra l'età
+        await ctx.send(f"{user.mention} is {age} years old.")
+            
+
+    @commands.hybrid_command(name="adminbirthday")
+    @commands.is_owner()
+    async def _admin(self, ctx:commands.Context, user:utils.UserConverter, birthdate:typing.Annotated[datetime.date, utils.DateConverter]):
+        """owner command to set birthdays"""
+        await self.bot.pool.execute(
+            """
+            INSERT INTO birthdays (user_id, birthdate)
+            VALUES ($1, $2)
+            ON CONFLICT (user_id) DO UPDATE
+            SET birthdate = EXCLUDED.birthdate
+            """,
+            user.id,
+            birthdate,
+        )
+        await ctx.send(
+            f"{user.mention}'s birthday has been set to {birthdate.strftime('%d/%m/%Y')}!"
+        )
+
+    @commands.hybrid_group(aliases=["bd"], with_app_command=True)
+    async def birthday(self, ctx: commands.Context, user: typing.Optional[discord.User] = None):
+        """Check `user`'s birthday"""
+        if user is None:
+            user = ctx.author
+
+        # Recupera il compleanno dal database
+        birthdate:datetime.date = await self.bot.pool.fetchval(
+            "SELECT birthdate FROM birthdays WHERE user_id = $1",
+            user.id
+        )
+
+        if not birthdate:
+            # Mostra un errore se il compleanno non è stato salvato
+            if user == ctx.author:
+                await ctx.send("You haven't set your birthday yet. Use `/birthday set` to set it.", ephemeral=True)
+            else:
+                await ctx.send(f"{user.mention} hasn't set their birthday yet.", ephemeral=True)
+            return
+
+        today = datetime.date.today()
+        if birthdate.year == 0:
+            age = None
+            formatted_date = birthdate.strftime("%d/%m")
+        else:
+            age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
+            formatted_date = birthdate.strftime("%d/%m/%Y")
+        text = f"{user.mention}'s birthday is on {formatted_date}"
+        # Mostra la data di nascita e, se disponibile, l'età
+        if age is not None:
+            text += f" (Age: {age} years old)"
+        await ctx.send(text)
+        
+    @birthday.command(name="set")
+    async def set_own_birthday(self, ctx: commands.Context,
+                           birthdate: typing.Annotated[datetime.date, utils.DateConverter]):
+        """Set your own birthday"""
+        # Inserisce o aggiorna il compleanno nel database
+        if birthdate.year == 0:
+            formatted_date = birthdate.strftime("%d/%m")
+            await self.bot.pool.execute(
+                """
+                INSERT INTO birthdays (user_id, birthdate)
+                VALUES ($1, $2)
+                ON CONFLICT (user_id) DO UPDATE
+                SET birthdate = EXCLUDED.birthdate
+                """,
+                ctx.author.id,
+                birthdate,
+            )
+            await ctx.send(f"Your birthday has been set to {formatted_date} (year hidden)!")
+        else:
+            formatted_date = birthdate.strftime("%d/%m/%Y")
+            await self.bot.pool.execute(
+                """
+                INSERT INTO birthdays (user_id, birthdate)
+                VALUES ($1, $2)
+                ON CONFLICT (user_id) DO UPDATE
+                SET birthdate = EXCLUDED.birthdate
+                """,
+                ctx.author.id,
+                birthdate,
+            )
+            await ctx.send(f"Your birthday has been set to {formatted_date}!")
+
+    @birthday.command(name="delete")
+    async def delete_own_birthday(self, ctx: commands.Context):
+        """Delete your own birthday"""
+        # Elimina il compleanno dal database
+        await self.bot.pool.execute(
+            "DELETE FROM birthdays WHERE user_id = $1",
+            ctx.author.id
+        )
+        await ctx.send("Your birthday has been deleted.")
+    
+    @birthday.command(name="list")
+    async def birthday_list(self, ctx:commands.Context):
+        """show every birthday in order"""
+        
+    
+
     @commands.command()
     async def slidepuzzle(self, ctx: commands.Context, number: int = 3):
         """Credit to z03h#6375 for this idea"""
