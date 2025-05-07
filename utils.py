@@ -3176,20 +3176,16 @@ class DateConverter(commands.Converter):
         """Converts a date string in the format dd/mm/yyyy to a datetime.date object."""
         argument=argument.strip()
         try:
-            if len(argument.split("/")) == 2:  # Format: dd/mm
-                await ctx.send("Converting date with 2 arguments")
-                date = datetime.datetime.strptime(argument, "%d/%m").date().replace(year=0)
-                await ctx.send(f"Converted date {date}")
-                return date  # if year is zero they haven't provided their birth year
-            elif len(argument.split("/")) == 3:  # Format: dd/mm/yyyy
-                await ctx.send("Convertind date with 3 arguments")
-                date = datetime.datetime.strptime(argument, "%d/%m/%Y").date()
-                return date
-            else:
-                await ctx.send("This should be unreachable")
+            if len(argument.split("/")) not in (2,3):
                 raise commands.BadArgument(
                 f"Invalid date format: {argument}. Use dd/mm or dd/mm/yyyy."
             )
+            if len(argument.split("/")) == 2:  # Format: dd/mm
+                await ctx.send("Converting date with 2 arguments")
+                argument=f"{argument}/0"
+            await ctx.send("Convertind date with 3 arguments")
+            date = datetime.datetime.strptime(argument, "%d/%m/%Y").date()
+            return date
         except ValueError:
             raise commands.BadArgument(
                 f"Invalid date format: {argument}. Use dd/mm or dd/mm/yyyy."
