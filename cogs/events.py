@@ -4,8 +4,8 @@ from discord.ext import commands, tasks
 import asyncio
 import typing
 import bot
-import traceback
 import utils
+import traceback
 from discord.ext.commands.errors import (
     CommandNotFound,
     MemberNotFound,
@@ -15,7 +15,6 @@ from discord.ext.commands.errors import (
     UserNotFound,
 )
 import datetime
-import pytz
 
 never_text = """[2-0 1v1](https://cdn.discordapp.com/attachments/1259352820998606879/1286049799430475897/Desktop_2024.09.18_-_20.29.44.09_-_Trim.mp4?ex=675353b5&is=67520235&hm=fa4aa74778e723d1990e894528a74a4a683f741aed65d79642a5c7aa6f5ebf58&)
 [3-0 3v3](https://media.discordapp.net/attachments/644571546769424384/1285717657680740450/2024-09-17_22-33-49_-_Trim.mp4?ex=67536fe1&is=67521e61&hm=ac73121503ae60d1ae23082f66e46d46f5498d80e2ecee81fa7c00234699a503&)
@@ -68,7 +67,7 @@ class events(commands.Cog):
         self.gm_msg.cancel()
         self.gn_msg.cancel()
 
-    @tasks.loop(time=datetime.time(hour=8, tzinfo=pytz.timezone("Europe/Rome")))
+    @tasks.loop(time=datetime.time(hour=6))
     async def birthday_announcer(self):
         """Task that announces birthdays every day at 8:00 AM (Italian time)"""
         today = datetime.date.today()
@@ -112,7 +111,7 @@ class events(commands.Cog):
 
 
     @tasks.loop(
-        time=datetime.time(hour=8, tzinfo=pytz.timezone("Europe/Rome"))
+        time=datetime.time(hour=10)
     )
     async def gm_msg(self):
         """Task that runs every day at 8:00 AM (Italian time)"""
@@ -122,7 +121,7 @@ class events(commands.Cog):
         if channel is None:
             return
 
-        now = datetime.datetime.now(pytz.timezone("Europe/Rome"))
+        now = datetime.datetime.now()
         eight_hours_ago = now - datetime.timedelta(hours=8)
 
         unique_authors = []
@@ -144,7 +143,7 @@ class events(commands.Cog):
         await self.bot.wait_until_ready()
 
     @tasks.loop(
-        time=datetime.time(hour=23,minute=3,tzinfo=pytz.timezone("Europe/Rome"))
+        time=datetime.time(hour=21,minute=7)
     )
     async def gn_msg(self):
         """Task that runs every day at 23:00  (Italian time)"""
@@ -155,7 +154,7 @@ class events(commands.Cog):
         if channel is None:
             return
 
-        now = datetime.datetime.now(pytz.timezone("Europe/Rome"))
+        now = datetime.datetime.now()
         eight_hours_ago = now - datetime.timedelta(hours=8)
 
         unique_authors = []
