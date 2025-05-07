@@ -3174,6 +3174,7 @@ class TikTokPageSource(menus.ListPageSource):
 class DateConverter(commands.Converter):
     async def convert(self, ctx: commands.Context, argument: str):
         """Converts a date string in the format dd/mm/yyyy to a datetime.date object."""
+        argument=argument.strip()
         try:
             if len(argument.split("/")) == 2:  # Format: dd/mm
                 await ctx.send("Converting date with 2 arguments")
