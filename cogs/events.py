@@ -74,15 +74,12 @@ class events(commands.Cog):
         channel_id = 785651298090614784
         channel = self.bot.get_channel(channel_id)
 
-        if not channel:
-            print(f"Channel with ID {channel_id} not found.")
+        if channel is None:
             return
 
-        # Calcola l'intervallo di tempo (ultime 8 ore)
         now = datetime.datetime.now(pytz.timezone("Europe/Rome"))
         eight_hours_ago = now - datetime.timedelta(hours=8)
 
-        # Recupera i messaggi
         unique_authors = []
         async for message in channel.history(after=eight_hours_ago, oldest_first=True):
             if message.author.bot:
@@ -90,8 +87,6 @@ class events(commands.Cog):
             if message.author not in unique_authors:
                 unique_authors.append(message.author)
 
-        # Stampa o salva gli autori unici
-        # Stampa o salva gli autori unici
         if unique_authors:
             author_names = ", ".join(author.name for author in unique_authors)
             await channel.send(f"Good morning {author_names}!")
@@ -110,15 +105,12 @@ class events(commands.Cog):
         channel_id = 785651298090614784
         channel = self.bot.get_channel(channel_id)
 
-        if not channel:
-            print(f"Channel with ID {channel_id} not found.")
+        if channel is None:
             return
 
-        # Calcola l'intervallo di tempo (ultime 8 ore)
         now = datetime.datetime.now(pytz.timezone("Europe/Rome"))
         eight_hours_ago = now - datetime.timedelta(hours=8)
 
-        # Recupera i messaggi
         unique_authors = []
         async for message in channel.history(after=eight_hours_ago, oldest_first=True):
             if message.author.bot:
@@ -126,7 +118,6 @@ class events(commands.Cog):
             if message.author not in unique_authors:
                 unique_authors.append(message.author)
 
-        # Stampa o salva gli autori unici
         if unique_authors:
             author_names = ", ".join(author.name for author in unique_authors)
             await channel.send(f"Good night {author_names}!")
