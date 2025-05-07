@@ -975,7 +975,7 @@ class Fun(commands.Cog):
         text = f"{user.mention}'s birthday is on {formatted_date}"
         # Mostra la data di nascita e, se disponibile, l'età
         if age is not None:
-            text += f" (Age: {age} years old)"
+            text += f"\nAge: {age} years old"
 
         em=discord.Embed(color=discord.Color.orange())
         em.set_author(name=user.name, icon_url=user.display_avatar)
