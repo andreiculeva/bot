@@ -1051,7 +1051,8 @@ class Fun(commands.Cog):
                 age = today.year - birthdate.year - (
                     (today.month, today.day) < (birthdate.month, birthdate.day)
                 )
-            entries.append({"user": user, "date": formatted_date, "age": f" (Age: {age})" if age else ""})
+            user_name = user.global_name or user.name
+            entries.append({"user": user_name, "date": formatted_date, "age": f" (Age: {age})" if age else ""})
 
         # Usa la classe `SimpleBirthdayPageSource` per creare una paginazione
         source = utils.SimpleBirthdayPageSource(entries, per_page=10)
