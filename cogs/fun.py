@@ -946,6 +946,7 @@ class Fun(commands.Cog):
         )
 
     @commands.hybrid_group(aliases=["bd"], with_app_command=True)
+    @app_commands.describe(user="The target user")
     async def birthday(self, ctx: commands.Context, user: typing.Optional[discord.User] = None):
         """Check `user`'s birthday"""
         if user is None:
@@ -983,6 +984,7 @@ class Fun(commands.Cog):
         await ctx.send(embed=em)
         
     @birthday.command(name="set")
+    @app_commands.describe(birthdate="dd/mm/yyyy format is required, dd/mm can be used if you don't want to provide the year")
     async def set_own_birthday(self, ctx: commands.Context,
                            birthdate: typing.Annotated[datetime.date, utils.DateConverter]):
         """Set your own birthday"""
@@ -1058,8 +1060,6 @@ class Fun(commands.Cog):
         source = utils.SimpleBirthdayPageSource(entries, per_page=10)
         pages = utils.RoboPages(source, ctx=ctx)
         await pages.start()
-
-
 
 
     @birthday.command(name="list")
