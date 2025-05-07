@@ -898,7 +898,7 @@ class Fun(commands.Cog):
 
         # Recupera il compleanno dal database
         birthdate:datetime.date = await self.bot.pool.fetchval(
-            "SELECT birthdate FROM birthdays WHERE user_id = $1",
+            "SELECT date FROM birthdays WHERE user_id = $1",
             user.id
         )
 
@@ -932,10 +932,10 @@ class Fun(commands.Cog):
         """owner command to set birthdays"""
         await self.bot.pool.execute(
             """
-            INSERT INTO birthdays (user_id, birthdate)
+            INSERT INTO birthdays (user_id, date)
             VALUES ($1, $2)
             ON CONFLICT (user_id) DO UPDATE
-            SET birthdate = EXCLUDED.birthdate
+            SET date = EXCLUDED.date
             """,
             user.id,
             birthdate,
@@ -952,7 +952,7 @@ class Fun(commands.Cog):
 
         # Recupera il compleanno dal database
         birthdate:datetime.date = await self.bot.pool.fetchval(
-            "SELECT birthdate FROM birthdays WHERE user_id = $1",
+            "SELECT date FROM birthdays WHERE user_id = $1",
             user.id
         )
 
@@ -986,10 +986,10 @@ class Fun(commands.Cog):
             formatted_date = birthdate.strftime("%d/%m")
             await self.bot.pool.execute(
                 """
-                INSERT INTO birthdays (user_id, birthdate)
+                INSERT INTO birthdays (user_id, date)
                 VALUES ($1, $2)
                 ON CONFLICT (user_id) DO UPDATE
-                SET birthdate = EXCLUDED.birthdate
+                SET date = EXCLUDED.date
                 """,
                 ctx.author.id,
                 birthdate,
@@ -999,10 +999,10 @@ class Fun(commands.Cog):
             formatted_date = birthdate.strftime("%d/%m/%Y")
             await self.bot.pool.execute(
                 """
-                INSERT INTO birthdays (user_id, birthdate)
+                INSERT INTO birthdays (user_id, date)
                 VALUES ($1, $2)
                 ON CONFLICT (user_id) DO UPDATE
-                SET birthdate = EXCLUDED.birthdate
+                SET date = EXCLUDED.date
                 """,
                 ctx.author.id,
                 birthdate,
@@ -1023,9 +1023,9 @@ class Fun(commands.Cog):
     async def list_all_birthdays(self, ctx:commands.Context):
         birthdays = await self.bot.pool.fetch(
             """
-            SELECT user_id, birthdate
+            SELECT user_id, date
             FROM birthdays
-            ORDER BY birthdate
+            ORDER BY date
             """
         )
 
@@ -1037,7 +1037,7 @@ class Fun(commands.Cog):
         today = datetime.date.today()
         for record in birthdays:
             user = self.bot.get_user(record["user_id"]) or f"User ID {record['user_id']}"
-            birthdate = record["birthdate"]
+            birthdate = record["date"]
             if birthdate.year == 0:
                 formatted_date = birthdate.strftime("%d/%m")
                 age = None
