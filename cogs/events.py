@@ -58,7 +58,7 @@ class events(commands.Cog):
 
         self.vanities: dict[int, discord.Invite] = {}
         self.invites = {}
-        self.channels = {}  # server_id : channel_id
+        self.invite_channels = {}  # server_id : channel_id
         self.update_invites.start()
         self.gm_msg.start()
 
@@ -645,18 +645,18 @@ class events(commands.Cog):
         data = await self.bot.pool.fetch("SELECT * FROM invite_logchannel")
         if not data:
             return
-        self.channels = {}
+        self.invite_channels = {}
         for server_id, channel_id in data:
-            self.channels[server_id] = channel_id
+            self.invite_channels[server_id] = channel_id
 
         # list of the old server invites
         invite_servers = list(self.invites.keys())
         for server_id in invite_servers:
-            if server_id not in self.channels.keys():
+            if server_id not in self.invite_channels.keys():
                 del self.invites[server_id]
                 del self.vanities[server_id]
 
-        for server_id, channel_id in self.channels.items():
+        for server_id, channel_id in self.invite_channels.items():
             log_channel = self.bot.get_channel(channel_id)
             if log_channel is None:
                 await self.bot.pool.execute(
@@ -682,7 +682,7 @@ class events(commands.Cog):
         if not data:
             return
         for server_id, channel_id in data:
-            self.channels[server_id] = channel_id
+            self.invite_channels[server_id] = channel_id
             log_channel = self.bot.get_channel(channel_id)
             if log_channel is None:
                 await self.bot.pool.execute(
@@ -713,7 +713,7 @@ class events(commands.Cog):
 
     @commands.Cog.listener(name="on_member_join")
     async def joinertracker(self, member: discord.Member):
-        if not member.guild.id in self.channels.keys():
+        if not member.guild.id in self.invite_channels.keys():
             return
         em = discord.Embed(color=discord.Color.orange())
         em.set_author(name=member, icon_url=member.display_avatar)
@@ -742,12 +742,12 @@ class events(commands.Cog):
         em.description += (
             f"\nAccount created: {discord.utils.format_dt(member.created_at, 'R')}"
         )
-        await self.bot.get_channel(self.channels[member.guild.id]).send(embed=em)
+        await self.bot.get_channel(self.invite_channels[member.guild.id]).send(embed=em)
         self.invites[member.guild.id] = await member.guild.invites()
 
     @commands.Cog.listener(name="on_member_remove")
     async def memberremovercheckidk(self, member: discord.Member):
-        if not member.guild.id in self.channels.keys():
+        if not member.guild.id in self.invite_channels.keys():
             return
         em = discord.Embed(color=discord.Color.red())
         em.set_author(name=member, icon_url=member.display_avatar)
@@ -755,18 +755,18 @@ class events(commands.Cog):
         em.description += (
             f"\nAccount created: {discord.utils.format_dt(member.created_at, 'R')}"
         )
-        await self.bot.get_channel(self.channels[member.guild.id]).send(embed=em)
+        await self.bot.get_channel(self.invite_channels[member.guild.id]).send(embed=em)
         self.invites[member.guild.id] = await member.guild.invites()
 
     @commands.Cog.listener(name="on_invite_create")
     async def inviteupdatecreate(self, invite: discord.Invite):
-        if not invite.guild.id in self.channels.keys():
+        if not invite.guild.id in self.invite_channels.keys():
             return
         self.invites[invite.guild.id] = await invite.guild.invites()
 
     @commands.Cog.listener(name="on_invite_delete")
     async def inviteupdatedelete(self, invite: discord.Invite):
-        if not invite.guild.id in self.channels.keys():
+        if not invite.guild.id in self.invite_channels.keys():
             return
         self.invites[invite.guild.id] = await invite.guild.invites()
 
