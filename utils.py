@@ -3178,6 +3178,7 @@ class DateConverter(commands.Converter):
             if len(argument.split("/")) == 2:  # Format: dd/mm
                 await ctx.send("Converting date with 2 arguments")
                 date = datetime.datetime.strptime(argument, "%d/%m").date().replace(year=0)
+                await ctx.send(f"Converted date {date}")
                 return date  # if year is zero they haven't provided their birth year
             elif len(argument.split("/")) == 3:  # Format: dd/mm/yyyy
                 await ctx.send("Convertind date with 3 arguments")
