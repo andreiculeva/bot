@@ -122,7 +122,7 @@ class events(commands.Cog):
             return
 
         now = datetime.datetime.now()
-        eight_hours_ago = now - datetime.timedelta(hours=8)
+        eight_hours_ago = now - datetime.timedelta(hours=10)
 
         unique_authors :list[discord.User]= []
         async for message in channel.history(after=eight_hours_ago, oldest_first=True):
@@ -155,7 +155,7 @@ class events(commands.Cog):
             return
 
         now = datetime.datetime.now()
-        eight_hours_ago = now - datetime.timedelta(hours=8)
+        eight_hours_ago = now - datetime.timedelta(hours=10)
 
         unique_authors :list[discord.User]= []
         async for message in channel.history(after=eight_hours_ago, oldest_first=True):
