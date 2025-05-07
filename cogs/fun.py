@@ -926,6 +926,7 @@ class Fun(commands.Cog):
             
 
     @commands.hybrid_command(name="adminbirthday")
+    @app_commands.guilds(discord.Object(id=831556458398089217))
     @commands.is_owner()
     async def _admin(self, ctx:commands.Context, user:utils.UserConverter, birthdate:typing.Annotated[datetime.date, utils.DateConverter]):
         """owner command to set birthdays"""
