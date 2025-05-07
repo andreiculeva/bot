@@ -148,6 +148,7 @@ class events(commands.Cog):
     )
     async def gn_msg(self):
         """Task that runs every day at 23:00  (Italian time)"""
+        print("running task")
         channel_id = 785651298090614784
         channel = self.bot.get_channel(channel_id)
 
@@ -164,7 +165,7 @@ class events(commands.Cog):
             if any(word in message.content.lower() for word in ["gn", "night", "good night"]):
                 if message.author not in unique_authors:
                     unique_authors.append(message.author)
-
+        print("made it this far")
         if unique_authors:
             author_names = ", ".join(author.name for author in unique_authors)
             await channel.send(f"Good night {author_names}!")
