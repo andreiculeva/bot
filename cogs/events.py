@@ -66,6 +66,49 @@ class events(commands.Cog):
         self.update_invites.cancel()
         self.gm_msg.cancel()
 
+    @tasks.loop(time=datetime.time(hour=8, tzinfo=pytz.timezone("Europe/Rome")))
+    async def birthday_announcer(self):
+        """Task that announces birthdays every day at 8:00 AM (Italian time)"""
+        today = datetime.date.today()
+        birthday_channel_ids = await self.bot.pool.fetch("SELECT channel_id FROM birthday_channels")
+
+        for channel_id in birthday_channel_ids:
+            channel = self.bot.get_channel(channel_id)
+            if channel is None:
+                continue
+
+            # Recupera i compleanni dei membri del server
+            birthdays = await self.bot.pool.fetch(
+                """
+                SELECT user_id FROM birthdays
+                WHERE EXTRACT(MONTH FROM date) = $1 AND EXTRACT(DAY FROM date) = $2
+                """,
+                today.month, today.day,
+            )
+
+            if not birthdays:
+                continue
+
+            mentions = []
+            for record in birthdays:
+                member = channel.guild.get_member(record["user_id"])
+                if member:  # Controlla se l'utente è nel server
+                    mentions.append(member.mention)
+
+            if not mentions:
+                continue
+            message = f"🎉 Happy Birthday {', '.join(mentions)}! 🎂"
+
+            # Invia il messaggio nel canale
+            await channel.send(message)
+
+    @birthday_announcer.before_loop
+    async def before_birthday_announcer(self):
+        await self.bot.wait_until_ready()
+
+
+
+
     @tasks.loop(
         time=datetime.time(hour=8, tzinfo=pytz.timezone("Europe/Rome"))
     )

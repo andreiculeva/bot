@@ -1058,10 +1058,43 @@ class Fun(commands.Cog):
         pages = utils.RoboPages(source, ctx=ctx)
         await pages.start()
 
+
+
+
     @birthday.command(name="list")
     async def birthday_list(self, ctx:commands.Context):
         """show every birthday in order"""
         await self.list_all_birthdays(ctx)
+
+    @birthday.command(name="set_channel")
+    async def set_birthday_channel(self, ctx:commands.Context, channel:typing.Optional[discord.TextChannel]=None):
+        """Change the birthday channel announcement in the server
+        if no channel is given it stops tracking birthdays
+        note that this does not delete birthdays from the database"""
+        if (not ctx.author.guild_permissions.administrator) or (not ctx.author.id in self.bot.owner_ids):
+            raise commands.BadArgument("You need to be an administrator to do this")
+
+        if channel is None:
+            # Rimuove il canale di compleanno dal database
+            await self.bot.pool.execute(
+                "DELETE FROM birthday_channels WHERE server_id = $1",
+                ctx.guild.id
+            )
+            await ctx.send("Birthday announcements have been disabled for this server.")
+        else:
+            # Aggiunge o aggiorna il canale di compleanno nel database
+            await self.bot.pool.execute(
+                """
+                INSERT INTO birthday_channels (server_id, channel_id)
+                VALUES ($1, $2)
+                ON CONFLICT (server_id) DO UPDATE
+                SET channel_id = EXCLUDED.channel_id
+                """,
+                ctx.guild.id,
+                channel.id
+            )
+            await ctx.send(f"Birthday announcements will now be sent in {channel.mention}.")
+        
         
 
     @commands.hybrid_command(name="birthdays")
