@@ -1017,12 +1017,51 @@ class Fun(commands.Cog):
             ctx.author.id
         )
         await ctx.send("Your birthday has been deleted.")
-    
+
+
+    async def list_all_birthdays(self, ctx:commands.Context):
+        birthdays = await self.bot.pool.fetch(
+            """
+            SELECT user_id, birthdate
+            FROM birthdays
+            ORDER BY birthdate
+            """
+        )
+
+        if not birthdays:
+            return await ctx.send("No birthdays have been set yet.")
+
+        # Prepara i dati per la paginazione
+        entries = []
+        today = datetime.date.today()
+        for record in birthdays:
+            user = self.bot.get_user(record["user_id"]) or f"User ID {record['user_id']}"
+            birthdate = record["birthdate"]
+            if birthdate.year == 0:
+                formatted_date = birthdate.strftime("%d/%m")
+                age = None
+            else:
+                formatted_date = birthdate.strftime("%d/%m/%Y")
+                age = today.year - birthdate.year - (
+                    (today.month, today.day) < (birthdate.month, birthdate.day)
+                )
+            entries.append({"user": user, "date": formatted_date, "age": f" (Age: {age})" if age else ""})
+
+        # Usa la classe `SimpleBirthdayPageSource` per creare una paginazione
+        source = utils.SimpleBirthdayPageSource(entries, per_page=10)
+        pages = utils.RoboPages(source, ctx=ctx)
+        await pages.start()
+
     @birthday.command(name="list")
     async def birthday_list(self, ctx:commands.Context):
         """show every birthday in order"""
+        await self.list_all_birthdays(ctx)
         
-    
+
+    @commands.hybrid_command(name="birthdays")
+    async def show_all_birthdays(self, ctx:commands.Context):
+        await self.list_all_birthdays(ctx)
+        
 
     @commands.command()
     async def slidepuzzle(self, ctx: commands.Context, number: int = 3):
