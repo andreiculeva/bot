@@ -144,7 +144,7 @@ class events(commands.Cog):
         await self.bot.wait_until_ready()
 
     @tasks.loop(
-        time=datetime.time(hour=23,minute=2,tzinfo=pytz.timezone("Europe/Rome"))
+        time=datetime.time(hour=23,minute=3,tzinfo=pytz.timezone("Europe/Rome"))
     )
     async def gn_msg(self):
         """Task that runs every day at 23:00  (Italian time)"""
