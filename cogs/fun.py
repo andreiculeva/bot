@@ -910,7 +910,7 @@ class Fun(commands.Cog):
                 await ctx.send(f"{user.mention} hasn't set their birthday yet.", ephemeral=True)
             return
         
-        if birthdate.year == 0:
+        if birthdate.year == 1000:
             if user == ctx.author:
                 await ctx.send("You haven't provided your birth year. Use `.birthday set` to update it.", ephemeral=True)
             else:
@@ -965,7 +965,7 @@ class Fun(commands.Cog):
             return
 
         today = datetime.date.today()
-        if birthdate.year == 0:
+        if birthdate.year == 1000:
             age = None
             formatted_date = birthdate.strftime("%d/%m")
         else:
@@ -982,7 +982,7 @@ class Fun(commands.Cog):
                            birthdate: typing.Annotated[datetime.date, utils.DateConverter]):
         """Set your own birthday"""
         # Inserisce o aggiorna il compleanno nel database
-        if birthdate.year == 0:
+        if birthdate.year == 1000:
             formatted_date = birthdate.strftime("%d/%m")
             await self.bot.pool.execute(
                 """
@@ -1038,7 +1038,7 @@ class Fun(commands.Cog):
         for record in birthdays:
             user = self.bot.get_user(record["user_id"]) or f"User ID {record['user_id']}"
             birthdate = record["date"]
-            if birthdate.year == 0:
+            if birthdate.year == 1000:
                 formatted_date = birthdate.strftime("%d/%m")
                 age = None
             else:
