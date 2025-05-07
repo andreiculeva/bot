@@ -972,7 +972,7 @@ class Fun(commands.Cog):
         else:
             age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
             formatted_date = birthdate.strftime("%d/%m/%Y")
-        text = f"{user.mention}'s birthday is on {formatted_date}"
+        text = f"{user}'s birthday is on {formatted_date}"
         # Mostra la data di nascita e, se disponibile, l'età
         if age is not None:
             text += f"\nAge: {age} years old"
