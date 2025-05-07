@@ -922,7 +922,7 @@ class Fun(commands.Cog):
 
         em=discord.Embed(color=discord.Color.orange())
         em.set_author(name=user.name, icon_url=user.display_avatar)
-        em.description= f"{user.display_name} is {age} years old."
+        em.description= f"{user} is {age} years old."
         await ctx.send(embed=em)
             
 
