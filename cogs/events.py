@@ -61,10 +61,12 @@ class events(commands.Cog):
         self.invite_channels = {}  # server_id : channel_id
         self.update_invites.start()
         self.gm_msg.start()
+        self.gn_msg.start()
 
     def cog_unload(self):
         self.update_invites.cancel()
         self.gm_msg.cancel()
+        self.gn_msg.cancel()
 
     @tasks.loop(time=datetime.time(hour=8, tzinfo=pytz.timezone("Europe/Rome")))
     async def birthday_announcer(self):
@@ -142,7 +144,7 @@ class events(commands.Cog):
         await self.bot.wait_until_ready()
 
     @tasks.loop(
-        time=datetime.time(hour=23, tzinfo=pytz.timezone("Europe/Rome"))
+        time=datetime.time(hour=23,minute=2,tzinfo=pytz.timezone("Europe/Rome"))
     )
     async def gn_msg(self):
         """Task that runs every day at 23:00  (Italian time)"""
@@ -169,8 +171,8 @@ class events(commands.Cog):
         else:
             await channel.send("Good night everyone!")
 
-    @gm_msg.before_loop
-    async def before_gm_msg(self):
+    @gn_msg.before_loop
+    async def before_gn_msg(self):
         await self.bot.wait_until_ready()
 
     @staticmethod
