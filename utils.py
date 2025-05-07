@@ -3181,10 +3181,7 @@ class DateConverter(commands.Converter):
                 f"Invalid date format: {argument}. Use dd/mm or dd/mm/yyyy."
             )
             if len(argument.split("/")) == 2:  # Format: dd/mm
-                await ctx.send("Converting date with 2 arguments")
                 argument=f"{argument}/1000"
-
-            await ctx.send("Convertind date with 3 arguments")
             date = datetime.datetime.strptime(argument, "%d/%m/%Y").date()
             return date
         except ValueError:
