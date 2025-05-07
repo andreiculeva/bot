@@ -14,6 +14,8 @@ from discord.ext.commands.errors import (
     RoleNotFound,
     UserNotFound,
 )
+import datetime
+import pytz
 
 never_text = """[2-0 1v1](https://cdn.discordapp.com/attachments/1259352820998606879/1286049799430475897/Desktop_2024.09.18_-_20.29.44.09_-_Trim.mp4?ex=675353b5&is=67520235&hm=fa4aa74778e723d1990e894528a74a4a683f741aed65d79642a5c7aa6f5ebf58&)
 [3-0 3v3](https://media.discordapp.net/attachments/644571546769424384/1285717657680740450/2024-09-17_22-33-49_-_Trim.mp4?ex=67536fe1&is=67521e61&hm=ac73121503ae60d1ae23082f66e46d46f5498d80e2ecee81fa7c00234699a503&)
@@ -58,9 +60,82 @@ class events(commands.Cog):
         self.invites = {}
         self.channels = {}  # server_id : channel_id
         self.update_invites.start()
+        self.gm_msg.start()
 
     def cog_unload(self):
         self.update_invites.cancel()
+        self.gm_msg.cancel()
+
+    @tasks.loop(
+        time=datetime.datetime.time(hour=8, tzinfo=pytz.timezone("Europe/Rome"))
+    )
+    async def gm_msg(self):
+        """Task that runs every day at 8:00 AM (Italian time)"""
+        channel_id = 785651298090614784
+        channel = self.bot.get_channel(channel_id)
+
+        if not channel:
+            print(f"Channel with ID {channel_id} not found.")
+            return
+
+        # Calcola l'intervallo di tempo (ultime 8 ore)
+        now = datetime.datetime.now(pytz.timezone("Europe/Rome"))
+        eight_hours_ago = now - datetime.timedelta(hours=8)
+
+        # Recupera i messaggi
+        unique_authors = []
+        async for message in channel.history(after=eight_hours_ago, oldest_first=True):
+            if message.author.bot:
+                continue
+            if message.author not in unique_authors:
+                unique_authors.append(message.author)
+
+        # Stampa o salva gli autori unici
+        # Stampa o salva gli autori unici
+        if unique_authors:
+            author_names = ", ".join(author.name for author in unique_authors)
+            await channel.send(f"Good morning {author_names}!")
+        else:
+            await channel.send("Good morning everyone!")
+
+    @gm_msg.before_loop
+    async def before_gm_msg(self):
+        await self.bot.wait_until_ready()
+
+    @tasks.loop(
+        time=datetime.datetime.time(hour=23, tzinfo=pytz.timezone("Europe/Rome"))
+    )
+    async def gn_msg(self):
+        """Task that runs every day at 23:00  (Italian time)"""
+        channel_id = 785651298090614784
+        channel = self.bot.get_channel(channel_id)
+
+        if not channel:
+            print(f"Channel with ID {channel_id} not found.")
+            return
+
+        # Calcola l'intervallo di tempo (ultime 8 ore)
+        now = datetime.datetime.now(pytz.timezone("Europe/Rome"))
+        eight_hours_ago = now - datetime.timedelta(hours=8)
+
+        # Recupera i messaggi
+        unique_authors = []
+        async for message in channel.history(after=eight_hours_ago, oldest_first=True):
+            if message.author.bot:
+                continue
+            if message.author not in unique_authors:
+                unique_authors.append(message.author)
+
+        # Stampa o salva gli autori unici
+        if unique_authors:
+            author_names = ", ".join(author.name for author in unique_authors)
+            await channel.send(f"Good night {author_names}!")
+        else:
+            await channel.send("Good night everyone!")
+
+    @gm_msg.before_loop
+    async def before_gm_msg(self):
+        await self.bot.wait_until_ready()
 
     @staticmethod
     @commands.Cog.listener()
@@ -206,7 +281,6 @@ class events(commands.Cog):
             await asyncio.sleep(600)
             self.bot.deleted_files.pop(message.id, None)
 
-   
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         if message.author.bot:
@@ -413,7 +487,11 @@ class events(commands.Cog):
 
     @commands.Cog.listener(name="on_message")
     async def counter(self, message: discord.Message):
-        if message.channel.id not in (928597369111576597, 715986355485933619, 846257527678697502):
+        if message.channel.id not in (
+            928597369111576597,
+            715986355485933619,
+            846257527678697502,
+        ):
             return
         if (
             message.attachments
@@ -736,7 +814,9 @@ class events(commands.Cog):
             return
         never_id = 923723422574465085
         another_victim = 605398335691554827
-        targets = [never_id, ]
+        targets = [
+            never_id,
+        ]
         try:
             targets.index(member.id)
         except ValueError:
