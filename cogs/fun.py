@@ -1022,12 +1022,12 @@ class Fun(commands.Cog):
 
     async def list_all_birthdays(self, ctx:commands.Context):
         birthdays = await self.bot.pool.fetch(
-            """
-            SELECT user_id, date
-            FROM birthdays
-            ORDER BY date
-            """
-        )
+        """
+        SELECT user_id, date
+        FROM birthdays
+        ORDER BY EXTRACT(MONTH FROM date), EXTRACT(DAY FROM date)
+        """
+    )
 
         if not birthdays:
             return await ctx.send("No birthdays have been set yet.")
