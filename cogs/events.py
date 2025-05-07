@@ -124,7 +124,7 @@ class events(commands.Cog):
         now = datetime.datetime.now()
         eight_hours_ago = now - datetime.timedelta(hours=8)
 
-        unique_authors = []
+        unique_authors :list[discord.User]= []
         async for message in channel.history(after=eight_hours_ago, oldest_first=True):
             if message.author.bot:
                 continue
@@ -133,7 +133,7 @@ class events(commands.Cog):
                     unique_authors.append(message.author)
 
         if unique_authors:
-            author_names = ", ".join(author.name for author in unique_authors)
+            author_names = ", ".join((author.global_name or author.name) for author in unique_authors)
             await channel.send(f"Good morning {author_names}!")
         else:
             await channel.send("Good morning everyone!")
@@ -143,7 +143,7 @@ class events(commands.Cog):
         await self.bot.wait_until_ready()
 
     @tasks.loop(
-        time=datetime.time(hour=21,minute=7)
+        time=datetime.time(hour=22)
     )
     async def gn_msg(self):
         """Task that runs every day at 23:00  (Italian time)"""
@@ -157,7 +157,7 @@ class events(commands.Cog):
         now = datetime.datetime.now()
         eight_hours_ago = now - datetime.timedelta(hours=8)
 
-        unique_authors = []
+        unique_authors :list[discord.User]= []
         async for message in channel.history(after=eight_hours_ago, oldest_first=True):
             if message.author.bot:
                 continue
@@ -166,7 +166,7 @@ class events(commands.Cog):
                     unique_authors.append(message.author)
         print("made it this far")
         if unique_authors:
-            author_names = ", ".join(author.name for author in unique_authors)
+            author_names = ", ".join((author.global_name or author.name) for author in unique_authors)
             await channel.send(f"Good night {author_names}!")
         else:
             await channel.send("Good night everyone!")
