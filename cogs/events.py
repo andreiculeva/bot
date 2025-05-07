@@ -67,7 +67,7 @@ class events(commands.Cog):
         self.gm_msg.cancel()
 
     @tasks.loop(
-        time=datetime.datetime.time(hour=8, tzinfo=pytz.timezone("Europe/Rome"))
+        time=datetime.time(hour=8, tzinfo=pytz.timezone("Europe/Rome"))
     )
     async def gm_msg(self):
         """Task that runs every day at 8:00 AM (Italian time)"""
@@ -98,7 +98,7 @@ class events(commands.Cog):
         await self.bot.wait_until_ready()
 
     @tasks.loop(
-        time=datetime.datetime.time(hour=23, tzinfo=pytz.timezone("Europe/Rome"))
+        time=datetime.time(hour=23, tzinfo=pytz.timezone("Europe/Rome"))
     )
     async def gn_msg(self):
         """Task that runs every day at 23:00  (Italian time)"""
