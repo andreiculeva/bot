@@ -905,24 +905,24 @@ class Fun(commands.Cog):
         if not birthdate:
             # Mostra un errore se il compleanno non è stato salvato
             if user == ctx.author:
-                await ctx.send("You haven't set your birthday yet. Use `/birthday set` to set it.", ephemeral=True)
+                await ctx.send("You haven't set your birthday yet. Use `.birthday set` to set it.", ephemeral=True)
             else:
                 await ctx.send(f"{user.mention} hasn't set their birthday yet.", ephemeral=True)
             return
         
         if birthdate.year == 0:
             if user == ctx.author:
-                await ctx.send("You haven't provided your birth year. Use `/birthday set` to update it.", ephemeral=True)
+                await ctx.send("You haven't provided your birth year. Use `.birthday set` to update it.", ephemeral=True)
             else:
                 await ctx.send(f"{user.mention} hasn't provided their birth year.", ephemeral=True)
             return
 
-        # Calcola l'età
         today = datetime.date.today()
         age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
 
-        # Mostra l'età
-        await ctx.send(f"{user.mention} is {age} years old.")
+        em=discord.Embed(color=discord.Color.orange())
+        em.set_author(name=user.name, icon_url=user.display_avatar)
+        em.description= f"{user.name} is {age} years old."
             
 
     @commands.hybrid_command(name="adminbirthday")
@@ -1009,7 +1009,7 @@ class Fun(commands.Cog):
             )
             await ctx.send(f"Your birthday has been set to {formatted_date}!")
 
-    @birthday.command(name="delete")
+    @birthday.command(name="delete", aliases=["remove"])
     async def delete_own_birthday(self, ctx: commands.Context):
         """Delete your own birthday"""
         # Elimina il compleanno dal database
