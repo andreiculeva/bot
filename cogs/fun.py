@@ -942,7 +942,7 @@ class Fun(commands.Cog):
             birthdate,
         )
         await ctx.send(
-            f"{user.mention}'s birthday has been set to {birthdate.strftime('%d/%m/%Y')}!"
+            f"{user}'s birthday has been set to {birthdate.strftime('%d/%m/%Y')}!"
         )
 
     @commands.hybrid_group(aliases=["bd"], with_app_command=True)
@@ -976,7 +976,11 @@ class Fun(commands.Cog):
         # Mostra la data di nascita e, se disponibile, l'età
         if age is not None:
             text += f" (Age: {age} years old)"
-        await ctx.send(text)
+
+        em=discord.Embed(color=discord.Color.orange())
+        em.set_author(name=user.name, icon_url=user.display_avatar)
+        em.description= text
+        await ctx.send(embed=em)
         
     @birthday.command(name="set")
     async def set_own_birthday(self, ctx: commands.Context,
