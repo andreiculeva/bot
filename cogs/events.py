@@ -127,8 +127,9 @@ class events(commands.Cog):
         async for message in channel.history(after=eight_hours_ago, oldest_first=True):
             if message.author.bot:
                 continue
-            if message.author not in unique_authors:
-                unique_authors.append(message.author)
+            if any(word in message.content.lower() for word in ["gm", "morning", "good morning"]):
+                if message.author not in unique_authors:
+                    unique_authors.append(message.author)
 
         if unique_authors:
             author_names = ", ".join(author.name for author in unique_authors)
@@ -158,8 +159,9 @@ class events(commands.Cog):
         async for message in channel.history(after=eight_hours_ago, oldest_first=True):
             if message.author.bot:
                 continue
-            if message.author not in unique_authors:
-                unique_authors.append(message.author)
+            if any(word in message.content.lower() for word in ["gn", "night", "good night"]):
+                if message.author not in unique_authors:
+                    unique_authors.append(message.author)
 
         if unique_authors:
             author_names = ", ".join(author.name for author in unique_authors)
