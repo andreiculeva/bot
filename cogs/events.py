@@ -446,7 +446,7 @@ class events(commands.Cog):
         if channel is None:
             return
         starboard_channel = discord.utils.find(
-            lambda t: t.name.lower() == "starboard", channel.guild.text_channels
+            lambda t: ("starboard" in t.name.lower()), channel.guild.text_channels
         )
         if starboard_channel is None:
             return
