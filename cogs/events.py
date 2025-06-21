@@ -69,15 +69,15 @@ class events(commands.Cog):
         self.gn_msg.cancel()
         self.birthday_announcer.cancel()
 
-    @tasks.loop(time=datetime.time(hour=7, minute=5))
+    @tasks.loop(time=datetime.time(hour=6))
     async def birthday_announcer(self):
         """Task that announces birthdays every day at 9:00 AM (Italian time)"""
         today = datetime.date.today()
-        birthday_channel_ids = await self.bot.pool.fetch("SELECT channel_id FROM birthday_channels")
-        print(f"Channels = {birthday_channel_ids}")
-        for channel_id in birthday_channel_ids:
-            print(f"Channel id = {channel_id}")
-            channel = self.bot.get_channel(channel_id)
+        entries = await self.bot.pool.fetch(
+            "SELECT channel_id FROM birthday_channels"
+        )
+        for entry in entries:
+            channel = self.bot.get_channel(entry["channel_id"])
             if channel is None:
                 continue
 
@@ -86,11 +86,11 @@ class events(commands.Cog):
                 SELECT user_id FROM birthdays
                 WHERE EXTRACT(MONTH FROM date) = $1 AND EXTRACT(DAY FROM date) = $2
                 """,
-                today.month, today.day,
+                today.month,
+                today.day,
             )
 
             if not birthdays:
-                print("no birthdays for today")
                 continue
 
             mentions = []
@@ -100,7 +100,6 @@ class events(commands.Cog):
                     mentions.append(member.mention)
 
             if not mentions:
-                print("no members found")
                 continue
             message = f"🎉 Happy Birthday {', '.join(mentions)}! 🎂"
 
@@ -111,12 +110,7 @@ class events(commands.Cog):
     async def before_birthday_announcer(self):
         await self.bot.wait_until_ready()
 
-
-
-
-    @tasks.loop(
-        time=datetime.time(hour=10)
-    )
+    @tasks.loop(time=datetime.time(hour=10))
     async def gm_msg(self):
         """Task that runs every day at 8:00 AM (Italian time)"""
         channel_id = 785651298090614784
@@ -128,16 +122,21 @@ class events(commands.Cog):
         now = datetime.datetime.now()
         eight_hours_ago = now - datetime.timedelta(hours=10)
 
-        unique_authors :list[discord.User]= []
+        unique_authors: list[discord.User] = []
         async for message in channel.history(after=eight_hours_ago, oldest_first=True):
             if message.author.bot:
                 continue
-            if any(word in message.content.lower() for word in ["gm", "morning", "good morning"]):
+            if any(
+                word in message.content.lower()
+                for word in ["gm", "morning", "good morning"]
+            ):
                 if message.author not in unique_authors:
                     unique_authors.append(message.author)
 
         if unique_authors:
-            author_names = ", ".join((author.global_name or author.name) for author in unique_authors)
+            author_names = ", ".join(
+                (author.global_name or author.name) for author in unique_authors
+            )
             await channel.send(f"Good morning {author_names}!")
         else:
             await channel.send("Good morning everyone!")
@@ -146,9 +145,7 @@ class events(commands.Cog):
     async def before_gm_msg(self):
         await self.bot.wait_until_ready()
 
-    @tasks.loop(
-        time=datetime.time(hour=22)
-    )
+    @tasks.loop(time=datetime.time(hour=22))
     async def gn_msg(self):
         """Task that runs every day at 23:00  (Italian time)"""
         print("running task")
@@ -161,16 +158,21 @@ class events(commands.Cog):
         now = datetime.datetime.now()
         eight_hours_ago = now - datetime.timedelta(hours=10)
 
-        unique_authors :list[discord.User]= []
+        unique_authors: list[discord.User] = []
         async for message in channel.history(after=eight_hours_ago, oldest_first=True):
             if message.author.bot:
                 continue
-            if any(word in message.content.lower() for word in ["gn", "night", "good night"]):
+            if any(
+                word in message.content.lower()
+                for word in ["gn", "night", "good night"]
+            ):
                 if message.author not in unique_authors:
                     unique_authors.append(message.author)
         print("made it this far")
         if unique_authors:
-            author_names = ", ".join((author.global_name or author.name) for author in unique_authors)
+            author_names = ", ".join(
+                (author.global_name or author.name) for author in unique_authors
+            )
             await channel.send(f"Good night {author_names}!")
         else:
             await channel.send("Good night everyone!")
