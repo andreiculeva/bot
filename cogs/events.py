@@ -61,15 +61,17 @@ class events(commands.Cog):
         self.update_invites.start()
         self.gm_msg.start()
         self.gn_msg.start()
+        self.birthday_announcer.start()
 
     def cog_unload(self):
         self.update_invites.cancel()
         self.gm_msg.cancel()
         self.gn_msg.cancel()
+        self.birthday_announcer.cancel()
 
-    @tasks.loop(time=datetime.time(hour=6))
+    @tasks.loop(time=datetime.time(hour=7))
     async def birthday_announcer(self):
-        """Task that announces birthdays every day at 8:00 AM (Italian time)"""
+        """Task that announces birthdays every day at 9:00 AM (Italian time)"""
         today = datetime.date.today()
         birthday_channel_ids = await self.bot.pool.fetch("SELECT channel_id FROM birthday_channels")
 
