@@ -69,7 +69,7 @@ class events(commands.Cog):
         self.gn_msg.cancel()
         self.birthday_announcer.cancel()
 
-    @tasks.loop(time=datetime.time(hour=7))
+    @tasks.loop(time=datetime.time(hour=7, minute=5))
     async def birthday_announcer(self):
         """Task that announces birthdays every day at 9:00 AM (Italian time)"""
         today = datetime.date.today()
