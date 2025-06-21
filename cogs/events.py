@@ -80,7 +80,6 @@ class events(commands.Cog):
             if channel is None:
                 continue
 
-            # Recupera i compleanni dei membri del server
             birthdays = await self.bot.pool.fetch(
                 """
                 SELECT user_id FROM birthdays
@@ -90,6 +89,7 @@ class events(commands.Cog):
             )
 
             if not birthdays:
+                print("no birthdays for today")
                 continue
 
             mentions = []
@@ -99,6 +99,7 @@ class events(commands.Cog):
                     mentions.append(member.mention)
 
             if not mentions:
+                print("no members found")
                 continue
             message = f"🎉 Happy Birthday {', '.join(mentions)}! 🎂"
 
