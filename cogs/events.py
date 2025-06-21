@@ -74,7 +74,7 @@ class events(commands.Cog):
         """Task that announces birthdays every day at 9:00 AM (Italian time)"""
         today = datetime.date.today()
         birthday_channel_ids = await self.bot.pool.fetch("SELECT channel_id FROM birthday_channels")
-
+        print(f"Channels = {birthday_channel_ids}")
         for channel_id in birthday_channel_ids:
             channel = self.bot.get_channel(channel_id)
             if channel is None:
