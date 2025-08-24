@@ -15,7 +15,7 @@ async def main() -> None:
     os.environ["JISHAKU_HIDE"] = "True"
 
     discord.utils.setup_logging(level=logging.INFO)
-    db_path = os.getenv("db")
+    db_path = os.getenv("db2")
     tk = os.getenv("token")
     
     async with asyncpg.create_pool(db_path) as pool:
