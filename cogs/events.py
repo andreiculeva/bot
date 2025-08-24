@@ -15,11 +15,116 @@ from discord.ext.commands.errors import (
     UserNotFound,
 )
 import datetime
+import random
 
 never_text = """[2-0 1v1](https://cdn.discordapp.com/attachments/1259352820998606879/1286049799430475897/Desktop_2024.09.18_-_20.29.44.09_-_Trim.mp4?ex=675353b5&is=67520235&hm=fa4aa74778e723d1990e894528a74a4a683f741aed65d79642a5c7aa6f5ebf58&)
 [3-0 3v3](https://media.discordapp.net/attachments/644571546769424384/1285717657680740450/2024-09-17_22-33-49_-_Trim.mp4?ex=67536fe1&is=67521e61&hm=ac73121503ae60d1ae23082f66e46d46f5498d80e2ecee81fa7c00234699a503&)
 [ugly poor](https://media.discordapp.net/attachments/846138076836397058/1312238164341035018/image.png?ex=6753ad86&is=67525c06&hm=9860557ea8c942c3cfa7d16ad09e5bba9ec14186c172ff9c2d2c24fe11d89fff&=&format=webp&quality=lossless)
 [ugly poor](https://media.discordapp.net/attachments/846143258195001364/1314444498801004564/image.png?ex=6753cb55&is=675279d5&hm=09710ef7a20058f726f19772ff8cc434dcc5da1590239aed7391a9a73676b85a&=&format=webp&quality=lossless)"""
+
+
+insults_list = """
+{user} is the human equivalent of a participation trophy.
+{user} is the reason the gene pool needs a lifeguard.
+{user} is an absolute fucking donut.
+{user} is about as useful as a screen door on a submarine.
+I've had smarter conversations with a goddamn brick wall than I have with {user}.
+{user} is a monumental waste of skin.
+If ignorance is bliss, {user} must be the happiest motherfucker on Earth.
+{user} has the personality of a damp cloth.
+I would call {user} a cunt, but they lack both the warmth and the depth.
+{user} is the type of asshole to leave 1 second on the microwave.
+{user} isn't the sharpest tool in the shed; they're not even in the goddamn shed.
+{user}'s family tree must be a cactus because everyone on it is a prick.
+{user} is an insufferable twat.
+I envy everyone {user} has never met.
+If {user}'s brain was dynamite, there wouldn't be enough to blow their fucking hat off.
+{user} is the human equivalent of a dial-up modem sound.
+{user} is a gaping abscess who needs to learn when to shut their mouth.
+{user} is as bright as a black hole, and twice as dense.
+I've forgotten more than {user} will ever know, the simple bastard.
+{user} couldn't pour water out of a boot with instructions on the heel.
+{user} is a fucking oxygen thief.
+{user} looks like their face was set on fire and someone tried to put it out with a fork.
+{user} is an absolute muppet.
+{user} has a room-temperature IQ... in Celsius.
+{user} is the after-photo in a "don't do drugs" campaign.
+{user} is less of a person and more of a fucking problem.
+Someone needs to pop {user} with a fucking pin, the massive balloon of ego.
+{user} is a goddamn troglodyte.
+{user} is the kind of person who claps when the plane lands.
+{user}'s thought process is a tangled fucking mess of Christmas lights.
+{user} is the human version of a Monday morning.
+I'd agree with {user}, but then we'd both be wrong, the dumb shit.
+{user} is a f—king waste of a perfectly good asshole.
+Every time {user} talks, they lower the IQ of the entire room.
+{user} is the human equivalent of getting your sock wet.
+{user} is an absolute cockwomble.
+If I wanted to kill myself, I'd climb {user}'s ego and jump to their IQ.
+{user} is as useful as a poopy-flavored lollipop.
+{user} is a B-list celebrity in their own fucking life story.
+{user} is an utter shit-gibbon.
+{user} couldn't organize a piss-up in a brewery.
+{user} is proof that God has a sense of humor, and it's fucking twisted.
+{user} isn't a clown, they're the entire goddamn circus.
+Somewhere out there, a tree is tirelessly producing oxygen for {user}. They owe it an apology.
+{user} is a vacuous, mouth-breathing cretin.
+{user}'s own reflection called the cops on them.
+I bet {user} thinks "cumbersome" is a variety of fucking vegetable.
+{user} is a bigger disappointment than the last season of Game of Thrones.
+{user} is an absolute douche-canoe.
+{user}'s face looks like it was used to extinguish a campfire.
+I'm not saying I hate {user}, but I would unplug their life support to charge my phone.
+{user} is a fucking nincompoop.
+{user} is the reason we have warning labels on everything.
+{user} has the charisma of a damp rag.
+{user} is a stale breadstick of a person.
+{user} is a grey-scale painting in a world of fucking color.
+{user} is an utter, utter bastard.
+{user} is the personification of a 404 error: personality not found.
+{user} is so dense, light bends around them.
+{user} looks like they were beaten with an ugly stick.
+If {user} were a spice, they'd be fucking flour.
+{user} is about as interesting as a blank sheet of paper.
+{user} has all the charm of a dead fish.
+Calling {user} a tool is a fucking insult to hammers everywhere.
+{user} is a fart in a jar.
+I've seen more intelligent life on a slice of moldy bread than in {user}.
+{user} is a worthless sack of shit.
+{user} is ten pounds of crap in a five-pound bag.
+{user} is the result of a participation award being given at an orgy.
+I would roast {user}, but my mom told me not to burn trash.
+{user} brings everyone a lot of joy… when they leave the fucking room.
+{user} is the answer to a question no one fucking asked.
+{user} could be replaced by a houseplant and no one would notice the difference for a week.
+{user} is a fucking bellend.
+If I had a face like {user}'s, I'd sue my parents.
+{user} is a walking, talking argument for abortion.
+{user} is the human equivalent of a traffic jam.
+{user} is the reason they invented the middle finger.
+{user} is a fucking chode.
+{user} is a half-eaten bag of soggy dicks.
+I've met doorstops with more personality than {user}.
+{user} is a fucking liability to the human race.
+{user} is a pathetic excuse for a mammal.
+{user} is a two-bit, no-account, bottom-feeding shit-heel.
+{user} is a few fries short of a Happy Meal.
+{user} is the human equivalent of a glitter bomb—messy and impossible to get rid of.
+{user} is an absolute tosser.
+{user} is so fucking boring, my paint is watching them dry.
+{user} is a sad, strange little person, and they have my pity.
+{user} couldn't hit water if they fell out of a fucking boat.
+{user} is a stain on the underwear of society.
+I hope {user}'s day is as pleasant as they are.
+{user} is the poster child for why some animals eat their young.
+{user} is a festering pustule on the ass of humanity.
+{user} isn't just a dipshit; they're the whole fucking dip.
+{user} is an inspiration for birth control.
+{user} is a blithering idiot.
+{user} is a fucking wanker.
+{user} is the weakest link. Goodbye.
+Honestly, {user} should just fuck off.
+""".splitlines()
 
 
 async def check_dms(user: discord.User):
@@ -106,6 +211,12 @@ class events(commands.Cog):
             # Invia il messaggio nel canale
             await channel.send(message)
 
+    def get_random_user(self, guild:discord.Guild):
+        return random.choice([x for x in guild.members if not x.bot])
+
+    def get_insult(self, user:discord.User) -> str:
+        return random.choice(insults_list).replace("{user}", user.mention)
+
     @birthday_announcer.before_loop
     async def before_birthday_announcer(self):
         await self.bot.wait_until_ready()
@@ -139,7 +250,8 @@ class events(commands.Cog):
             )
             await channel.send(f"Good morning {author_names}!")
         else:
-            await channel.send("Good morning everyone!")
+            text = self.get_insult(self.get_random_user(channel.guild))
+            await channel.send(text)
 
     @gm_msg.before_loop
     async def before_gm_msg(self):
@@ -175,7 +287,8 @@ class events(commands.Cog):
             )
             await channel.send(f"Good night {author_names}!")
         else:
-            await channel.send("Good night everyone!")
+            text = self.get_insult(self.get_random_user(channel.guild))
+            await channel.send(text)
 
     @gn_msg.before_loop
     async def before_gn_msg(self):
