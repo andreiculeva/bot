@@ -12,7 +12,7 @@ import typing
 import discord
 from discord.errors import HTTPException, NotFound
 from discord.ext import commands
-from discord.ext.commands.converter import PartialEmojiConverter
+from discord.ext.commands.converter import PartialEmojiConverter, MemberConverter
 import datetime
 import time
 import re
@@ -372,7 +372,7 @@ class Utility(commands.Cog):
 
     @commands.command(aliases=["sav", "serveravatar"])
     async def savatar(
-        self, ctx: commands.Context, member: utils.MemberConverter = None
+        self, ctx: commands.Context, member: MemberConverter = None
     ):
         """Returns the `member`'s server avatar, if available.
         `member` can be the author of the message reference"""
