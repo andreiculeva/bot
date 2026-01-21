@@ -12,7 +12,7 @@ import typing
 import discord
 from discord.errors import HTTPException, NotFound
 from discord.ext import commands
-from discord.ext.commands.converter import PartialEmojiConverter, MemberConverter
+from discord.ext.commands.converter import PartialEmojiConverter
 import datetime
 import time
 import re
@@ -372,7 +372,7 @@ class Utility(commands.Cog):
 
     @commands.command(aliases=["sav", "serveravatar"])
     async def savatar(
-        self, ctx: commands.Context, member: MemberConverter = None
+        self, ctx: commands.Context, member: utils.MemberConverter = None
     ):
         """Returns the `member`'s server avatar, if available.
         `member` can be the author of the message reference"""
@@ -386,6 +386,7 @@ class Utility(commands.Cog):
             return await ctx.send("This member has no server avatar")
         em = discord.Embed(color=red)
         em.set_author(name=member, icon_url=member.guild_avatar)
+        em.set_image(url=member.guild_avatar)
         return await ctx.send(
             embed=em, view=discord.ui.View().add_item(utils.url_button(member))
         )
