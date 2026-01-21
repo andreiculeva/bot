@@ -384,7 +384,7 @@ class Utility(commands.Cog):
 
         if member.guild_avatar is None:
             return await ctx.send("This member has no server avatar")
-        em = discord.Embed(color=red)
+        em = discord.Embed(color=orange)
         em.set_author(name=member, icon_url=member.guild_avatar)
         em.set_image(url=member.guild_avatar)
         return await ctx.send(
