@@ -945,6 +945,46 @@ class Fun(commands.Cog):
             f"{user}'s birthday has been set to {birthdate.strftime('%d/%m/%Y')}!"
         )
 
+    @commands.hybrid_command(name="ages")
+    async def get_all_ages(self, ctx: commands.Context):
+        """Orders all users with a saved birthday by age, from the oldest to the youngest"""
+        birthdays = await self.bot.pool.fetch(
+        """
+        SELECT user_id, date
+        FROM birthdays
+        ORDER BY EXTRACT(MONTH FROM date), EXTRACT(DAY FROM date)
+        """
+    )
+
+        if not birthdays:
+            return await ctx.send("No birthdays have been set yet.")
+        
+        today = datetime.date.today()
+        age_list = []
+        for record in birthdays:
+            user = self.bot.get_user(record["user_id"])
+            if user is None:
+                continue
+            user_name = user.global_name or user.name
+            birthdate = record["date"]
+            if birthdate.year == 1000:
+                age_list.append((user_name, "Unknown"))
+            else:
+                age = today.year - birthdate.year - (
+                    (today.month, today.day) < (birthdate.month, birthdate.day)
+                )
+                age_list.append((user_name, age))
+
+        age_list.sort(key=lambda x: x[1] if isinstance(x[1], int) else float('inf'), reverse=True)
+
+        description = "\n".join(
+            [f"{user}: {age} years old" for user, age in age_list]
+        )
+
+        em=discord.Embed(color=discord.Color.orange(), title="Ages of users with saved birthdays")
+        em.description = description
+        await ctx.send(embed=em)
+
     @commands.hybrid_group(aliases=["bd"], with_app_command=True)
     @app_commands.describe(user="The target user")
     async def birthday(self, ctx: commands.Context, user: typing.Optional[discord.User] = None):
