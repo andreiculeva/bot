@@ -1043,7 +1043,11 @@ class Fun(commands.Cog):
         entries = []
         today = datetime.date.today()
         for record in birthdays:
-            user = self.bot.get_user(record["user_id"]) or f"User ID {record['user_id']}"
+            user = self.bot.get_user(record["user_id"])
+            if user is None:
+                user_name = f"User ID {record['user_id']}"
+            else:
+                user_name = user.global_name or user.name
             birthdate = record["date"]
             if birthdate.year == 1000:
                 formatted_date = birthdate.strftime("%d/%m")
@@ -1053,7 +1057,6 @@ class Fun(commands.Cog):
                 age = today.year - birthdate.year - (
                     (today.month, today.day) < (birthdate.month, birthdate.day)
                 )
-            user_name = user.global_name or user.name
             entries.append({"user": user_name, "date": formatted_date, "age": f" (Age: {age})" if age else ""})
 
         # Usa la classe `SimpleBirthdayPageSource` per creare una paginazione
