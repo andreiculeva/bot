@@ -962,7 +962,7 @@ class Fun(commands.Cog):
             user = ctx.guild.get_member(record["user_id"])
             if user is None:
                 continue
-            user_name = user.global_name or user.name
+            user_name = user.display_name
             birthdate = record["date"]
             if birthdate.year == 1000:
                 continue
@@ -977,7 +977,7 @@ class Fun(commands.Cog):
             [f"{user}: {age} years old" for user, age in age_list]
         )
 
-        em=discord.Embed(color=discord.Color.orange(), title="Ages of users with saved birthdays")
+        em=discord.Embed(color=discord.Color.orange(), title="Ordered ages")
         em.description = description
         await ctx.send(embed=em)
 
