@@ -1038,26 +1038,44 @@ class Fun(commands.Cog):
 
         if not birthdays:
             return await ctx.send("No birthdays have been set yet.")
-
+        
+        
         # Prepara i dati per la paginazione
         entries = []
         today = datetime.date.today()
-        for record in birthdays:
-            user = self.bot.get_user(record["user_id"])
-            if user is None:
-                user_name = f"User ID {record['user_id']}"
-            else:
+        if ctx.guild:
+            for record in birthdays:
+                user = ctx.guild.get_member(record["user_id"])
+                if user is None:
+                    continue
                 user_name = user.global_name or user.name
-            birthdate = record["date"]
-            if birthdate.year == 1000:
-                formatted_date = birthdate.strftime("%d/%m")
-                age = None
-            else:
-                formatted_date = birthdate.strftime("%d/%m/%Y")
-                age = today.year - birthdate.year - (
-                    (today.month, today.day) < (birthdate.month, birthdate.day)
-                )
-            entries.append({"user": user_name, "date": formatted_date, "age": f" (Age: {age})" if age else ""})
+                birthdate = record["date"]
+                if birthdate.year == 1000:
+                    formatted_date = birthdate.strftime("%d/%m")
+                    age = None
+                else:
+                    formatted_date = birthdate.strftime("%d/%m/%Y")
+                    age = today.year - birthdate.year - (
+                        (today.month, today.day) < (birthdate.month, birthdate.day)
+                    )
+                entries.append({"user": user_name, "date": formatted_date, "age": f" (Age: {age})" if age else ""})
+        else:
+            for record in birthdays:
+                user = self.bot.get_user(record["user_id"])
+                if user is None:
+                    user_name = f"User ID {record['user_id']}"
+                else:
+                    user_name = user.global_name or user.name
+                birthdate = record["date"]
+                if birthdate.year == 1000:
+                    formatted_date = birthdate.strftime("%d/%m")
+                    age = None
+                else:
+                    formatted_date = birthdate.strftime("%d/%m/%Y")
+                    age = today.year - birthdate.year - (
+                        (today.month, today.day) < (birthdate.month, birthdate.day)
+                    )
+                entries.append({"user": user_name, "date": formatted_date, "age": f" (Age: {age})" if age else ""})
 
         # Usa la classe `SimpleBirthdayPageSource` per creare una paginazione
         source = utils.SimpleBirthdayPageSource(entries, per_page=10)
