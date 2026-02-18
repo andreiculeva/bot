@@ -1084,7 +1084,7 @@ class Fun(commands.Cog):
                 user = ctx.guild.get_member(record["user_id"])
                 if user is None:
                     continue
-                user_name = user.global_name or user.name
+                user_name = user.display_name
                 birthdate = record["date"]
                 if birthdate.year == 1000:
                     formatted_date = birthdate.strftime("%d/%m")
