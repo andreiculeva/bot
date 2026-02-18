@@ -955,25 +955,21 @@ class Fun(commands.Cog):
         ORDER BY EXTRACT(MONTH FROM date), EXTRACT(DAY FROM date)
         """
     )
-
-        if not birthdays:
-            return await ctx.send("No birthdays have been set yet.")
         
         today = datetime.date.today()
         age_list = []
         for record in birthdays:
-            user = self.bot.get_user(record["user_id"])
+            user = ctx.guild.get_member(record["user_id"])
             if user is None:
                 continue
             user_name = user.global_name or user.name
             birthdate = record["date"]
             if birthdate.year == 1000:
-                age_list.append((user_name, "Unknown"))
-            else:
-                age = today.year - birthdate.year - (
-                    (today.month, today.day) < (birthdate.month, birthdate.day)
-                )
-                age_list.append((user_name, age))
+                continue
+            age = today.year - birthdate.year - (
+                (today.month, today.day) < (birthdate.month, birthdate.day)
+            )
+            age_list.append((user_name, age))
 
         age_list.sort(key=lambda x: x[1] if isinstance(x[1], int) else float('inf'), reverse=True)
 
