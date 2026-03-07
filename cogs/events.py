@@ -566,7 +566,15 @@ class events(commands.Cog):
             if e.image and e.image.url:
                 if "tenor.com" in e.image.url:
                     #replace the filename at the end with .gif to get the actual gif url
-                    return e.image.url.replace(".png", ".gif").replace(".jpg", ".gif").replace(".jpeg", ".gif") 
+                    return e.image.url.replace(".png", ".gif").replace(".jpg", ".gif").replace(".jpeg", ".gif")
+                return e.image.url
+            if e.thumbnail and e.thumbnail.url:
+                if "tenor.com" in e.thumbnail.url:
+                    #replace the filename at the end with .gif to get the actual gif url
+                    return e.thumbnail.url.replace(".png", ".gif").replace(".jpg", ".gif").replace(".jpeg", ".gif") 
+                return e.thumbnail.url
+            if e.video and e.video.url and e.video.url.endswith(".gif"):
+                return e.video.url
 
         return None
 
