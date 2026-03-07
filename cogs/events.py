@@ -599,7 +599,8 @@ class events(commands.Cog):
         if len(message.attachments) == 1:
             if (
                 message.attachments[0]
-                .url.lower()
+                .filename
+                .lower()
                 .endswith(("png", "jpeg", "jpg", "gif", "webp"))
             ):
                 em.set_image(url=message.attachments[0].url)
@@ -612,7 +613,7 @@ class events(commands.Cog):
 
         else:
             for attachment in message.attachments:
-                if attachment.url.lower().endswith(
+                if attachment.filename.lower().endswith(
                     ("png", "jpeg", "jpg", "gif", "webp")
                 ):
                     if not image_set:
