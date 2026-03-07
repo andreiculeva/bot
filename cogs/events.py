@@ -557,26 +557,8 @@ class events(commands.Cog):
     
     def get_gif_url_from_message(self, msg: discord.Message):
         # 1) direct uploaded GIF
-        for a in msg.attachments:
-            if (a.content_type and "gif" in a.content_type) or a.filename.lower().endswith(".gif"):
-                return a.url
+        return msg.content + ".gif"
 
-        # 2) Tenor/other unfurled embeds
-        for e in msg.embeds:
-            if e.image and e.image.url:
-                if "tenor.com" in e.image.url:
-                    #replace the filename at the end with .gif to get the actual gif url
-                    return e.image.url.replace(".png", ".gif").replace(".jpg", ".gif").replace(".jpeg", ".gif")
-                return e.image.url
-            if e.thumbnail and e.thumbnail.url:
-                if "tenor.com" in e.thumbnail.url:
-                    #replace the filename at the end with .gif to get the actual gif url
-                    return e.thumbnail.url.replace(".png", ".gif").replace(".jpg", ".gif").replace(".jpeg", ".gif") 
-                return e.thumbnail.url
-            if e.video and e.video.url and e.video.url.endswith(".gif"):
-                return e.video.url
-
-        return None
 
     @commands.Cog.listener(name="on_raw_reaction_add")
     async def _starboard_checker(self, payload: discord.RawReactionActionEvent):
