@@ -561,38 +561,14 @@ class events(commands.Cog):
             if (a.content_type and "gif" in a.content_type) or a.filename.lower().endswith(".gif"):
                 return a.url
 
-        # 2) Tenor/other unfurled embeds (prefer animated sources)
+        # 2) Tenor/other unfurled embeds
         for e in msg.embeds:
-            image_url = e.image.url if e.image and e.image.url else None
-            image_proxy_url = e.image.proxy_url if e.image and e.image.proxy_url else None
-            video_url = e.video.url if e.video and e.video.url else None
-            thumbnail_url = e.thumbnail.url if e.thumbnail and e.thumbnail.url else None
-            thumbnail_proxy_url = (
-                e.thumbnail.proxy_url if e.thumbnail and e.thumbnail.proxy_url else None
-            )
-
-            fallback_url = image_url or image_proxy_url or thumbnail_url or thumbnail_proxy_url
-
-            for url in (
-                video_url,
-                image_url,
-                image_proxy_url,
-                thumbnail_url,
-                thumbnail_proxy_url,
-            ):
-                if not url:
-                    continue
-
-                low = url.lower()
-                if low.endswith(".gif") or ".gif?" in low:
-                    return url
-
-                # Tenor frequently exposes an mp4 URL; swap to gif endpoint.
-                if "media.tenor.com" in low and low.endswith(".mp4"):
-                    return url[:-4] + ".gif"
-
-            if fallback_url:
-                return fallback_url
+            if e.image and e.image.url:
+                return e.image.url          # often media.tenor.com/...gif
+            if e.thumbnail and e.thumbnail.url:
+                return e.thumbnail.url
+            if e.video and e.video.url and e.video.url.endswith(".gif"):
+                return e.video.url
 
         return None
 
