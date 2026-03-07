@@ -557,8 +557,7 @@ class events(commands.Cog):
     
     def get_gif_url_from_message(self, msg: discord.Message):
         # 1) direct uploaded GIF
-        return msg.content + ".gif"
-
+        return None
 
     @commands.Cog.listener(name="on_raw_reaction_add")
     async def _starboard_checker(self, payload: discord.RawReactionActionEvent):
