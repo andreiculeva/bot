@@ -554,8 +554,8 @@ class events(commands.Cog):
                 message_reference,
                 author_reference,
             )
-    @staticmethod
-    def get_gif_url_from_message(msg: discord.Message) -> str | None:
+    
+    def get_gif_url_from_message(self, msg: discord.Message) -> str | None:
         # 1) direct uploaded GIF
         for a in msg.attachments:
             if (a.content_type and "gif" in a.content_type) or a.filename.lower().endswith(".gif"):
