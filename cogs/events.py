@@ -566,8 +566,20 @@ class events(commands.Cog):
             image_url = e.image.url if e.image and e.image.url else None
             image_proxy_url = e.image.proxy_url if e.image and e.image.proxy_url else None
             video_url = e.video.url if e.video and e.video.url else None
+            thumbnail_url = e.thumbnail.url if e.thumbnail and e.thumbnail.url else None
+            thumbnail_proxy_url = (
+                e.thumbnail.proxy_url if e.thumbnail and e.thumbnail.proxy_url else None
+            )
 
-            for url in (video_url, image_url, image_proxy_url):
+            fallback_url = image_url or image_proxy_url or thumbnail_url or thumbnail_proxy_url
+
+            for url in (
+                video_url,
+                image_url,
+                image_proxy_url,
+                thumbnail_url,
+                thumbnail_proxy_url,
+            ):
                 if not url:
                     continue
 
@@ -576,8 +588,11 @@ class events(commands.Cog):
                     return url
 
                 # Tenor frequently exposes an mp4 URL; swap to gif endpoint.
-                if "media.tenor.com" in low and low.endswith("tenor.mp4"):
+                if "media.tenor.com" in low and low.endswith(".mp4"):
                     return url[:-4] + ".gif"
+
+            if fallback_url:
+                return fallback_url
 
         return None
 
