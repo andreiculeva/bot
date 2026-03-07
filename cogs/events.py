@@ -556,7 +556,14 @@ class events(commands.Cog):
             )
     
     def get_gif_url_from_message(self, msg: discord.Message):
-        # 1) direct uploaded GIF
+        image_exts = (".png", ".jpg", ".jpeg", ".gif", ".webp")
+
+        for raw_url in re.findall(r"https?://\S+", msg.content or ""):
+            url = raw_url.strip("<>()[]{}.,!?:;\"'")
+            url_no_query = url.split("?", 1)[0].split("#", 1)[0].lower()
+            if url_no_query.endswith(image_exts):
+                return url
+
         return None
 
     @commands.Cog.listener(name="on_raw_reaction_add")
