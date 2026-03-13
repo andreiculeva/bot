@@ -595,7 +595,7 @@ class events(commands.Cog):
                 break
             else:
                 count = 0
-        if (count < 3) and not pin:
+        if (count < 3) and not pin and message.guild.id != 1433524926815539302:
             return
         em = discord.Embed(color=discord.Color.orange())
         em.title = f"{count} \U00002b50"
