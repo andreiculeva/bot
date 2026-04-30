@@ -4,7 +4,7 @@ import json
 import os
 import pathlib
 import matplotlib
-import pkg_resources
+from importlib.metadata import version
 import utils
 from io import BytesIO
 import aiohttp
@@ -1027,7 +1027,7 @@ class Utility(commands.Cog):
         ]
         embed.add_field(name="Owners", value=" ".join(owners))
         embed.set_footer(
-            text=f"running on python {sys.version}\nmade with discord.py v{pkg_resources.get_distribution('discord.py').version}",
+            text=f"running on python {sys.version}\nmade with discord.py v{version('discord.py')}",
             icon_url="https://cdn.discordapp.com/icons/336642139381301249/3aa641b21acded468308a37eef43d7b3.png",
         )
 
