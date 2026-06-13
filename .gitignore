@@ -6,3 +6,6 @@ cogs/game.py
 cog.py
 logs2.py
 .gitignore
+cogs/game/game.py
+cogs/game/__pycache__
+cogs/game
